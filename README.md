@@ -10,10 +10,10 @@
 - libbluetooth-dev
 
 # Ubuntu/Debian/Raspbian #
->>sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+>sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
 
 # Fedora / Other-RPM based #
->>sudo yum install bluez bluez-libs bluez-libs-devel
+>sudo yum install bluez bluez-libs bluez-libs-devel
 
 # Windows #
 
@@ -30,7 +30,7 @@ Run "npm install" in order to install
 
 
 ### Usage ###
->>sudo node beacube
+>sudo node beacube
 
 ### Running on Linux ###
 
@@ -45,4 +45,4 @@ Note: The above command requires setcap to be installed, it can be installed usi
 # Multiple Adapters #
 hci0 is used by default to override set the NOBLE_HCI_DEVICE_ID environment variable to the interface number.
 Example, specify hci1:
->>sudo NOBLE_HCI_DEVICE_ID=1 node beacube.js
+>sudo NOBLE_HCI_DEVICE_ID=1 node beacube.js
