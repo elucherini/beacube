@@ -30,12 +30,13 @@ noble.on('discover', function(peripheral) {
 /* Remove discovered beacon that no longer appear */
 var BeaconCleaner = setInterval(function(){ //not exaustively tested
   var timestamp = Date.now();
-  userBLE.forEach(function (ble, index, array) {
+  for (var item in userBLE) {
+    var ble = userBLE[item];
     if(ble!=null && (timestamp-ble.last)>2)
       //userBLE[ble.uuid]=null;
-  	delete userBLE[ble.uuid];
-  });
-}, 3*60*1000); //3 min
+  	 delete userBLE[item];
+  }
+}, 3*60*1000); //3 min*/
 
 
 
@@ -49,7 +50,13 @@ rest.get('/hello', function(req, res) {
 });
 
 rest.get('/beacons', function(req,res){
-	res.send("Beacon list - to be implemented");
+	var result = [];
+	for (var item in userBLE) {
+    var ble = userBLE[item];
+    //result.push({ uuid: ble.uuid, rssi: ble.rssi, username: ble.username,  last: ble.last,  distance: ble.distance });
+    result.push(ble);
+  }
+	res.json(result);
 });
 
 var server = rest.listen(8081, function () {

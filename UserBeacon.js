@@ -35,7 +35,7 @@ UserBeacon.prototype.touch = function() {
 UserBeacon.prototype.updateRSSI = function(rssi) {
   this.rssi = rssi;
   this.touch();
-  this._computeDistance;
+  this._computeDistance();
 };
 
 module.exports = UserBeacon;
