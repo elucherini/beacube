@@ -49,7 +49,7 @@ rest.get('/hello', function(req, res) {
   res.send('Welcome to Beacube!');
 });
 
-rest.get('/beacons', function(req,res){
+rest.get('/beacons', function(req,res) {
 	var result = [];
 	for (var item in userBLE) {
     var ble = userBLE[item];
@@ -57,6 +57,28 @@ rest.get('/beacons', function(req,res){
     result.push(ble);
   }
 	res.json(result);
+});
+
+/* Returns json object of specified beacon */
+rest.get('/beacons/:uuid', function(req, res) {
+	res.json(userBLE[req.params.uuid]);
+});
+
+/* Returns json object of nearest beacon */
+rest.get('/nearest', function(req, res) {	// tested on zero and one beacon only
+	var min = null;
+	var first = true;
+	for (var item in userBLE) {
+		if (first == true) {
+			min = userBLE[item];	// un altro modo per inizializzare min senza errori?
+			first = false;
+		}
+		var current = userBLE[item];
+		if (current.distance < min.distance)
+			min = current;
+	}
+	
+	res.json(min);
 });
 
 var server = rest.listen(8081, function () {
