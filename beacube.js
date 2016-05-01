@@ -19,7 +19,7 @@ noble.on('stateChange', function(state) {
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null){
     	userBLE[peripheral.uuid].updateRSSI(peripheral.rssi);
-    	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi + "(" + userBLE[peripheral.uuid].calculateDistance() + ")");
+    	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi + "(" + userBLE[peripheral.uuid].distance + ")");
     }
     else{
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
@@ -28,13 +28,15 @@ noble.on('discover', function(peripheral) {
 });
 
 /* Remove discovered beacon that no longer appear */
-var BeaconCleaner = setInterval(function(){ //not exaustively tested
+var BeaconCleaner = setInterval(function(){
   var timestamp = Date.now();
   for (var item in userBLE) {
     var ble = userBLE[item];
-    if(ble!=null && (timestamp-ble.last)>2)
+    if(ble!=null && (timestamp-ble.last)>2){
+      console.log('DELETED UUID: ' + item);
       //userBLE[ble.uuid]=null;
   	 delete userBLE[item];
+    }
   }
 }, 3*60*1000); //3 min*/
 
@@ -53,7 +55,6 @@ rest.get('/beacons', function(req,res) {
 	var result = [];
 	for (var item in userBLE) {
     var ble = userBLE[item];
-    //result.push({ uuid: ble.uuid, rssi: ble.rssi, username: ble.username,  last: ble.last,  distance: ble.distance });
     result.push(ble);
   }
 	res.json(result);
@@ -64,18 +65,16 @@ rest.get('/beacons/:uuid', function(req, res) {
 	res.json(userBLE[req.params.uuid]);
 });
 
-/* Returns json object of nearest beacon */
+/* Returns json object of nearest beacon....they may be more than one with same distance*/
 rest.get('/nearest', function(req, res) {	// tested on zero and one beacon only
 	var min = null;
-	var first = true;
+  
 	for (var item in userBLE) {
-		if (first == true) {
-			min = userBLE[item];	// un altro modo per inizializzare min senza errori?
-			first = false;
-		}
-		var current = userBLE[item];
-		if (current.distance < min.distance)
-			min = current;
+    var current = userBLE[item];
+    if(min!=null && current.distance < min.distance)
+      min=current;
+    else if (min==null)
+      min=current;
 	}
 	
 	res.json(min);

@@ -1,3 +1,5 @@
+//import KalmanFilter from 'kalmanjs';
+
 /* ************************ 
 *     UserBeacon Class    *
 ***************************/
@@ -7,6 +9,9 @@ var UserBeacon = function(uuid, rssi, username){ //class constructor
 	this.username = username;
   this.last = Date.now();
   this.distance = this._computeDistance();
+
+  /* Private */
+  this.kf = new KalmanFilter();
 };
 
 /* ----- calculateDistance ---- */
