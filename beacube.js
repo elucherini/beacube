@@ -2,7 +2,9 @@ var noble = require('noble');
 var express = require('express');
 var UserBeacon = require("./UserBeacon")
 
-userBLE = [];
+const TIME_TO_LIVE = 3; //minutes
+
+userBLE = Array();
 
 /********************
 *   Noble Setup     *
@@ -10,7 +12,7 @@ userBLE = [];
 noble.on('stateChange', function(state) {
   if (state === 'poweredOn') {
     noble.startScanning([],true);
-    console.log('\nBLE scanning...');
+    console.log('BLE scanning...\n');
   } else {
     noble.stopScanning();
   }
@@ -19,7 +21,7 @@ noble.on('stateChange', function(state) {
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null){
     	userBLE[peripheral.uuid].updateRSSI(peripheral.rssi);
-    	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi + "(" + userBLE[peripheral.uuid].distance + ")");
+    	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi);
     }
     else{
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
@@ -34,19 +36,17 @@ var BeaconCleaner = setInterval(function(){
     var ble = userBLE[item];
     if(ble!=null && (timestamp-ble.last)>2){
       console.log('DELETED UUID: ' + item);
-      //userBLE[ble.uuid]=null;
   	 delete userBLE[item];
     }
   }
-}, 3*60*1000); //3 min*/
-
+}, TIME_TO_LIVE*60*1000);
 
 
 /********************
 *   RESTful API     *
 *********************/
 var rest = express();
-// respond with "hello world" when a GET request is made to the homepage
+
 rest.get('/hello', function(req, res) {
   res.send('Welcome to Beacube!');
 });
@@ -54,7 +54,7 @@ rest.get('/hello', function(req, res) {
 rest.get('/beacons', function(req,res) {
 	var result = [];
 	for (var item in userBLE) {
-    var ble = userBLE[item];
+    var ble = userBLE[item].getJson();
     result.push(ble);
   }
 	res.json(result);
@@ -62,22 +62,18 @@ rest.get('/beacons', function(req,res) {
 
 /* Returns json object of specified beacon */
 rest.get('/beacons/:uuid', function(req, res) {
-	res.json(userBLE[req.params.uuid]);
+	res.json(userBLE[req.params.uuid].getJson());
 });
 
-/* Returns json object of nearest beacon....they may be more than one with same distance*/
-rest.get('/nearest', function(req, res) {	// tested on zero and one beacon only
+/* Returns json object of nearest beacon...*/
+rest.get('/nearest', function(req, res) {
 	var min = null;
-  
 	for (var item in userBLE) {
     var current = userBLE[item];
-    if(min!=null && current.distance < min.distance)
-      min=current;
-    else if (min==null)
+    if((min!=null && current.distance < min.distance) || min==null)
       min=current;
 	}
-	
-	res.json(min);
+	res.json(min.getJson());
 });
 
 var server = rest.listen(8081, function () {

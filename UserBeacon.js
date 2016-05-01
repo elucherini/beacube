@@ -1,36 +1,24 @@
-//import KalmanFilter from 'kalmanjs';
+var KalmanFilter = require('kalmanjs').default;
+
+const MAX_SAMPLES = 30;
+const TX_POWER = -59; //usually ranges between -59 to -65
 
 /* ************************ 
 *     UserBeacon Class    *
 ***************************/
 var UserBeacon = function(uuid, rssi, username){ //class constructor
-	this.uuid = uuid;
+	/* Private */
+  this._kalmanFilter = new KalmanFilter();
+  /* Public */
+  this.uuid = uuid;
   this.rssi = rssi;
 	this.username = username;
   this.last = Date.now();
   this.distance = this._computeDistance();
-
-  /* Private */
-  this.kf = new KalmanFilter();
 };
 
-/* ----- calculateDistance ---- */
-UserBeacon.prototype._computeDistance = function() {
-	var txPower = -59 //usually ranges between -59 to -65
- 	if (this.rssi == 0) {
-  		this.distance = -1.0; 
-	}
-  else{
-  	var ratio = this.rssi*1.0/txPower;
-  	if (ratio < 1.0) {
-    	this.distance = Math.pow(ratio,10);
-  	}
-  	else {
-      this.distance =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;    
-    }
-  }
-};
 
+/********* PUBLIC METHODS *******************/
 /* ----- touch ---- */
 UserBeacon.prototype.touch = function() {
 	this.last = Date.now();
@@ -40,7 +28,29 @@ UserBeacon.prototype.touch = function() {
 UserBeacon.prototype.updateRSSI = function(rssi) {
   this.rssi = rssi;
   this.touch();
-  this._computeDistance();
+  this.distance = this._kalmanFilter.filter(this._computeDistance(rssi));
+};
+
+/* ----- getJson ---- */
+UserBeacon.prototype.getJson = function(){
+  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, last: this.last, username: this.username};
+};
+
+/********** PRIVATE METHODS ******************/
+/* ----- calculateDistance ---- */
+UserBeacon.prototype._computeDistance = function(rssi) {
+  var distance;
+    if (rssi == 0) {
+      distance = -1.0; 
+    }
+    else{
+      var ratio = rssi*1.0/TX_POWER;
+      if (ratio < 1.0) 
+        distance = Math.pow(ratio,10);
+      else 
+        distance =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;    
+    }
+    return distance;
 };
 
 module.exports = UserBeacon;
