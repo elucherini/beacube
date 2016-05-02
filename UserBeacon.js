@@ -1,4 +1,5 @@
 var KalmanFilter = require('kalmanjs').default;
+var User = require('./User');
 
 const MAX_SAMPLES = 30;
 const TX_POWER = -59; //usually ranges between -59 to -65
@@ -12,7 +13,8 @@ var UserBeacon = function(uuid, rssi, username){ //class constructor
   /* Public */
   this.uuid = uuid;
   this.rssi = rssi;
-	this.username = username;
+	//this.username = username;
+  this.user = new User(username);
   this.last = Date.now();
   this.distance = this._computeDistance();
 };
@@ -33,7 +35,7 @@ UserBeacon.prototype.updateRSSI = function(rssi) {
 
 /* ----- getJson ---- */
 UserBeacon.prototype.getJson = function(){
-  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, last: this.last, username: this.username};
+  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, last: this.last, user: this.user.username};
 };
 
 /********** PRIVATE METHODS ******************/

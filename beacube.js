@@ -1,6 +1,7 @@
 var noble = require('noble');
 var express = require('express');
-var UserBeacon = require("./UserBeacon")
+var bodyParser = require('body-parser');
+var UserBeacon = require("./UserBeacon");
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -21,11 +22,12 @@ noble.on('stateChange', function(state) {
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null){
     	userBLE[peripheral.uuid].updateRSSI(peripheral.rssi);
+		userBLE[peripheral.uuid].user.trigger();
     	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi);
     }
     else{
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
-      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, "Nome beacon");
+      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, "Username");
     }  
 });
 
@@ -46,6 +48,7 @@ var BeaconCleaner = setInterval(function(){
 *   RESTful API     *
 *********************/
 var rest = express();
+rest.use(bodyParser.json());
 
 rest.get('/hello', function(req, res) {
   res.send('Welcome to Beacube!');
@@ -62,7 +65,10 @@ rest.get('/beacons', function(req,res) {
 
 /* Returns json object of specified beacon */
 rest.get('/beacons/:uuid', function(req, res) {
-	res.json(userBLE[req.params.uuid].getJson());
+	if (userBLE[req.params.uuid] != null)
+		res.json(userBLE[req.params.uuid].getJson());
+	else
+		res.send(null);
 });
 
 /* Returns json object of nearest beacon...*/
@@ -74,6 +80,17 @@ rest.get('/nearest', function(req, res) {
       min=current;
 	}
 	res.json(min.getJson());
+});
+
+/* Inserts username */
+
+rest.post('/beacons/:uuid', function(req, res) {
+	if (userBLE[req.params.uuid] != null) {
+		userBLE[req.params.uuid].user.setUsername(req.body.username.toString());
+		res.json(userBLE[req.params.uuid].getJson());
+	}
+	else
+		res.send(null);
 });
 
 var server = rest.listen(8081, function () {
