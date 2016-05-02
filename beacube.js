@@ -79,5 +79,17 @@ rest.get('/nearest', function(req, res) {
 var server = rest.listen(8081, function () {
   var host = server.address().address
   var port = server.address().port
-  console.log("App listening at http://%s:%s", host, port)
+  console.log("REST server listening at http://%s:%s", host, port)
+});
+
+
+/********************
+*    Web Server     *
+*********************/
+var web = express();
+web.use('/admin', express.static(__dirname + '/admin'));
+var webserver = web.listen(80, function () {
+  var host = webserver.address().address
+  var port = webserver.address().port
+  console.log("Web App listening at http://%s:%s", host, port)
 });
