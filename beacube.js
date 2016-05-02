@@ -20,14 +20,15 @@ noble.on('stateChange', function(state) {
 });
 
 noble.on('discover', function(peripheral) {
-    if(userBLE[peripheral.uuid]!=null){
+    if(userBLE[peripheral.uuid]!=null) {
     	userBLE[peripheral.uuid].updateRSSI(peripheral.rssi);
-		userBLE[peripheral.uuid].user.trigger();
+		if (userBLE[peripheral.uuid].distance <= userBLE[peripheral.uuid].user.triggerzone)		// beacon is in triggerzone
+			userBLE[peripheral.uuid].user.trigger();
     	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi);
     }
     else{
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
-      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, "Username");
+      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, "Username", 1 /*triggerzone*/);
     }  
 });
 
@@ -76,22 +77,24 @@ rest.get('/nearest', function(req, res) {
 	var min = null;
 	for (var item in userBLE) {
     var current = userBLE[item];
-    if((min!=null && current.distance < min.distance) || min==null)
-      min=current;
+    if((min!=null && current.distance < min.distance) || min == null)
+      min = current;
 	}
 	res.json(min.getJson());
 });
 
-/* Inserts username */
-
+/* Edits username and trigger zone */
 rest.post('/beacons/:uuid', function(req, res) {
 	if (userBLE[req.params.uuid] != null) {
-		userBLE[req.params.uuid].user.setUsername(req.body.username.toString());
-		res.json(userBLE[req.params.uuid].getJson());
+		if (req.body.username != null)
+			userBLE[req.params.uuid].user.setUsername(req.body.username);
+		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone))
+			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
 	}
-	else
-		res.send(null);
+	
+	res.json(userBLE[req.params.uuid].getJson());
 });
+
 
 var server = rest.listen(8081, function () {
   var host = server.address().address
