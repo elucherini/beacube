@@ -5,7 +5,7 @@ var EventEmitter = require('events');
 *        User Class       *
 ***************************/
 
-var User = function(username, triggerzone){
+var User = function(username, triggerzone){ // class constructor
 	this.username = username;
 	this.triggerzone = triggerzone;
 	
