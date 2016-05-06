@@ -9,8 +9,9 @@
   "author": "Pasquale Antonante, Elena Lucherini",
   "license": "MIT",
   "dependencies": {
-    "noble": "~1.5.0",
+    "cors": "^2.7.1",
     "express": "~4.13.4",
-    "kalmanjs": "~1.0.0-beta"
+    "kalmanjs": "~1.0.0-beta",
+    "noble": "~1.5.0"
   }
 }

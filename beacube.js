@@ -1,6 +1,7 @@
 var noble = require('noble');
 var express = require('express');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
 
 const TIME_TO_LIVE = 3; //minutes
@@ -50,6 +51,7 @@ var BeaconCleaner = setInterval(function(){
 *********************/
 var rest = express();
 rest.use(bodyParser.json());
+rest.use(cors());
 
 rest.get('/hello', function(req, res) {
   res.send('Welcome to Beacube!');
@@ -80,7 +82,10 @@ rest.get('/nearest', function(req, res) {
     if((min!=null && current.distance < min.distance) || min == null)
       min = current;
 	}
-	res.json(min.getJson());
+	if (min != null)
+		res.json(min.getJson());
+	else
+		res.send(null);
 });
 
 /* Edits username and trigger zone */
@@ -108,6 +113,8 @@ var server = rest.listen(8081, function () {
 *********************/
 var web = express();
 web.use('/admin', express.static(__dirname + '/admin'));
+web.use(cors());
+
 var webserver = web.listen(80, function () {
   var host = webserver.address().address
   var port = webserver.address().port
