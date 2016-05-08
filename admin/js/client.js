@@ -1,19 +1,20 @@
 
-var client = new $.RestClient('http://localhost:8081/');
+var client = new $.RestClient('http://localhost:8082/');
 client.add('beacons');
 client.add('nearest');
 
-var res, nearest;
+var list, nearest;
 
 setInterval(function() {
-	bl = client.beacons.read();
+	// print list of beacons
+	list = client.beacons.read();
 	
-	bl.always(function(data) {	
+	list.always(function(data) {	
 		$('#beacon-list').empty();
 		
 		var appendText = '';
-		if (bl.responseText !== '[]') {
-			var jResponse = bl.responseJSON;
+		if (list.responseText !== '[]') {
+			var jResponse = list.responseJSON;
 			for (var i in jResponse) {
 				appendText += '<p>';
 				appendText += '<b>UUID:</b> ' + jResponse[i].uuid + '<br>';
@@ -27,14 +28,16 @@ setInterval(function() {
 			appendText = "No beacons connected";
 		$('#beacon-list').append(appendText);
 });
+	// print nearest beacon
 	nearest = client.nearest.read();
 	
-	nearest.always(function(data) {		
+	nearest.always(function(/*data*/) {		
 		$('#nearest-beacon').empty();
 		
 		var appendText = '';
+		var jResponse = nearest.responseJSON;
+		
 		if (nearest.responseText !== '') {
-			var jResponse = nearest.responseJSON;
 			appendText += '<p>';
 			appendText += '<b>UUID:</b> ' + jResponse.uuid + '<br>';
 			appendText += '<b>Distance:</b> ' + jResponse.distance + '<br>';
@@ -44,7 +47,11 @@ setInterval(function() {
 		}
 		else
 			appendText = "No beacons connected";
+		
+		if (jResponse.user == null)	
+			appendText += '<a href="settings.html?uuid=' + jResponse.uuid + '" class="btn btn-primary">Register</a>';
 		$('#nearest-beacon').append(appendText);
+		
 	});
 }, 500);
 

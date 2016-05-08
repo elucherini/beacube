@@ -29,7 +29,7 @@ noble.on('discover', function(peripheral) {
     }
     else{
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
-      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, "Username", 1 /*triggerzone*/);
+      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null /*triggerzone*/);
     }  
 });
 
@@ -90,18 +90,23 @@ rest.get('/nearest', function(req, res) {
 
 /* Edits username and trigger zone */
 rest.post('/beacons/:uuid', function(req, res) {
+	console.log("Request received");
 	if (userBLE[req.params.uuid] != null) {
+		//console.log("Values received: " + req.body.username + " " + req.body.trigger);
 		if (req.body.username != null)
 			userBLE[req.params.uuid].user.setUsername(req.body.username);
+		else
+			console.log("Username was null");
 		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone))
 			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
+		else
+			console.log("Triggerzone was null");
 	}
-	
 	res.json(userBLE[req.params.uuid].getJson());
 });
 
 
-var server = rest.listen(8081, function () {
+var server = rest.listen(8082, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("REST server listening at http://%s:%s", host, port)
