@@ -42,7 +42,8 @@ UserBeacon.prototype.getJson = function(){
 /********** PRIVATE METHODS ******************/
 /* ----- calculateDistance ---- */
 UserBeacon.prototype._computeDistance = function(rssi) {
-  var distance;
+  // OLD vers.
+  /*  var distance;
     if (rssi == 0) {
       distance = -1.0; 
     }
@@ -54,6 +55,13 @@ UserBeacon.prototype._computeDistance = function(rssi) {
         distance =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;    
     }
     return distance;
+    */
+
+  // Path Loss Model
+  var n=2;  //decay ratio (usually 2 in indoor)
+  var d0 = 1; //reference distance
+  var p0 = -67; //rssi @ d0
+  return  d0*Math.pow(10,(p0-rssi)/(10*n));
 };
 
 module.exports = UserBeacon;
