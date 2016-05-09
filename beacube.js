@@ -90,20 +90,21 @@ rest.get('/nearest', function(req, res) {
 
 /* Edits username and trigger zone */
 rest.post('/beacons/:uuid', function(req, res) {
-	console.log("Request received");
-	console.log(req);
-	var json = JSON.parse(req); //JSON.parse(req);
+	console.log("POST received");
+  //console.log(req.body);
 	if (userBLE[req.params.uuid] != null) {
 		//console.log("Values received: " + req.body.username + " " + req.body.triggerzone);
 		
-		if (req.body.username != null)
-			console.log("Username is " + req.username /*req.body.username*/);
-			//userBLE[req.params.uuid].user.setUsername(/*req.body.username*/ json.username);
+		if (req.body.username != null){
+			console.log("Username is " + req.body.username );
+			userBLE[req.params.uuid].user.setUsername(req.body.username);
+    }
 		else
 			console.log("Username was null");
-		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone))
-			console.log("Triggerzone is " + /*req.body.triggerzone*/ req.triggerzone);
-			//userBLE[req.params.uuid].user.setTriggerzone(/*req.body.triggerzone*/ json.triggerzone);
+		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone)){
+			console.log("Triggerzone is " + req.body.triggerzone);
+			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
+    }
 		else
 			console.log("Triggerzone was null");
 	}
@@ -125,7 +126,7 @@ var web = express();
 web.use('/admin', express.static(__dirname + '/admin'));
 web.use(cors());
 
-var webserver = web.listen(8083, function () {
+var webserver = web.listen(8000, function () {
   var host = webserver.address().address
   var port = webserver.address().port
   console.log("Web App listening at http://%s:%s", host, port)

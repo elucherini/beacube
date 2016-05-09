@@ -36,7 +36,7 @@ User.prototype.getTriggerzone = function() {
 
 /* setTriggerzone */
 User.prototype.setTriggerzone = function(tz) {
-	this.triggerzone = tz;
+	this.triggerzone = parseFloat(tz);
 };
 
 module.exports = User;

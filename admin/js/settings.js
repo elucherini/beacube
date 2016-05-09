@@ -16,29 +16,31 @@ if (window.location.search !== "") {
 	});
 	
 	$('#form-settings').submit(function(e) {	// POSTs settings from form
-	alert("SONO NELLA FUNZIONE :DDDDD");
 		var newName = $('#name-bar').val(),
 			newTrigger = $('.range-slider__range').val();
 			
-		var json = '{ "username": "' + newName + '", "triggerzone": "' + newTrigger + '" }';
-		//var json = { username: newName, triggerzone: newTrigger };
-		/*
-		$.post('http://131.114.170.108:8082/beacons/'+uuid, json, function(data) {
-			console.log(data);
-		}, "json");
-		*/
+		//var json = '{ "username": "' + newName + '", "triggerzone": "' + newTrigger + '" }';
+		/*var json = { username: newName, triggerzone: newTrigger };
 		
-		$.ajax({
-			url: 'http://131.114.170.108:8082/beacons/'+uuid,
+		$.post('http://127.0.0.1:8082/beacons/'+uuid, json, function(data) {
+			console.log(data);
+		});*/
+		
+		
+	$.ajax({
+			url: 'http://127.0.0.1:8082/beacons/'+uuid,
 			type: 'post',
-			data: json,
+			data: { username: newName, triggerzone: newTrigger },
 			headers: {
-				'content-type': 'text/plain'       //If your header name has spaces or any other char not appropriate
+				'content-type': 'application/json'       //If your header name has spaces or any other char not appropriate
 				//"Header Name Two": 'Header Value Two'  //for object property name, use quoted notation shown in second
 			},
-			dataType: 'text',
+			dataType: 'json',
 			success: function (data) {
 				alert("SUCCESS");
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				alert(textStatus);
 			}
 		});
 		
