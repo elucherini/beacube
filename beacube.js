@@ -1,6 +1,6 @@
 var noble = require('noble');
 var express = require('express');
-//var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
 
@@ -50,7 +50,7 @@ var BeaconCleaner = setInterval(function(){
 *   RESTful API     *
 *********************/
 var rest = express();
-//rest.use(bodyParser.json());
+rest.use(bodyParser.json());
 rest.use(cors());
 
 rest.get('/hello', function(req, res) {
@@ -91,15 +91,19 @@ rest.get('/nearest', function(req, res) {
 /* Edits username and trigger zone */
 rest.post('/beacons/:uuid', function(req, res) {
 	console.log("Request received");
-	var json = JSON.parse(req);
+	console.log(req);
+	var json = JSON.parse(req); //JSON.parse(req);
 	if (userBLE[req.params.uuid] != null) {
-		console.log("Values received: " + JSON.stringify(req));
-		if (/*req.body.username*/ json.username != null)
-			userBLE[req.params.uuid].user.setUsername(/*req.body.username*/ json.username);
+		//console.log("Values received: " + req.body.username + " " + req.body.triggerzone);
+		
+		if (req.body.username != null)
+			console.log("Username is " + req.username /*req.body.username*/);
+			//userBLE[req.params.uuid].user.setUsername(/*req.body.username*/ json.username);
 		else
 			console.log("Username was null");
-		if (/*req.body.triggerzone*/ json.triggerzone != null && !isNaN(/*req.body.triggerzone*/ json.triggerzone))
-			userBLE[req.params.uuid].user.setTriggerzone(/*req.body.triggerzone*/ json.triggerzone);
+		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone))
+			console.log("Triggerzone is " + /*req.body.triggerzone*/ req.triggerzone);
+			//userBLE[req.params.uuid].user.setTriggerzone(/*req.body.triggerzone*/ json.triggerzone);
 		else
 			console.log("Triggerzone was null");
 	}

@@ -1,4 +1,4 @@
-var client = new $.RestClient('http://localhost:8082/');
+var client = new $.RestClient('http://131.114.170.108:8082/');
 
 if (window.location.search !== "") {
 	var uuid = window.location.search.replace("?uuid=", "");
@@ -16,27 +16,34 @@ if (window.location.search !== "") {
 	});
 	
 	$('#form-settings').submit(function(e) {	// POSTs settings from form
+	alert("SONO NELLA FUNZIONE :DDDDD");
 		var newName = $('#name-bar').val(),
 			newTrigger = $('.range-slider__range').val();
-			/*
+			
+		var json = '{ "username": "' + newName + '", "triggerzone": "' + newTrigger + '" }';
+		//var json = { username: newName, triggerzone: newTrigger };
+		/*
+		$.post('http://131.114.170.108:8082/beacons/'+uuid, json, function(data) {
+			console.log(data);
+		}, "json");
+		*/
+		
 		$.ajax({
-			url: 'http://localhost:8082/beacons/'+uuid,
+			url: 'http://131.114.170.108:8082/beacons/'+uuid,
 			type: 'post',
-			data: {
-				"username": newName,
-				"triggerzone": newTrigger
-			},
+			data: json,
 			headers: {
-				'content-type': 'application/json'       //If your header name has spaces or any other char not appropriate
+				'content-type': 'text/plain'       //If your header name has spaces or any other char not appropriate
 				//"Header Name Two": 'Header Value Two'  //for object property name, use quoted notation shown in second
 			},
-			dataType: 'json',
+			dataType: 'text',
 			success: function (data) {
 				alert("SUCCESS");
 			}
-		});*/
-			
-		var json = { "username": newName, "triggerzone": newTrigger };
+		});
+		
+			/*
+		var json = '{ "username": "' + newName + '", "triggerzone": "' + newTrigger + '" }';
 		//json = JSON.stringify(json);
 		var validate = client.post.create(json);
 		console.log(JSON.stringify(json));
@@ -44,6 +51,6 @@ if (window.location.search !== "") {
 		validate.success(function(data) {		// confirms success (always() NOT RIGHT TBH)
 			$('#settings').append('<span>Changes saved</span>');
 		});
-		
+		*/
 	});
 }
