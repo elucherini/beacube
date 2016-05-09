@@ -36,7 +36,7 @@ if (window.location.search !== "") {
 			}
 		});*/
 			
-		var json = { username: newName, triggerzone: newTrigger };
+		var json = { "username": newName, "triggerzone": newTrigger };
 		//json = JSON.stringify(json);
 		var validate = client.post.create(json);
 		console.log(JSON.stringify(json));
