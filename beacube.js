@@ -22,14 +22,14 @@ noble.on('stateChange', function(state) {
 
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null) {
-    	userBLE[peripheral.uuid].updateRSSI(peripheral.rssi);
-		if (userBLE[peripheral.uuid].distance <= userBLE[peripheral.uuid].user.triggerzone)		// beacon is in triggerzone
-			userBLE[peripheral.uuid].user.trigger();
+    	userBLE[peripheral.uuid].update(peripheral.rssi);
+		//if (userBLE[peripheral.uuid].distance <= userBLE[peripheral.uuid].user.triggerzone)		// beacon is in triggerzone
+		//	userBLE[peripheral.uuid].user.trigger();
     	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi);
     }
     else{
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
-      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null /*triggerzone*/);
+      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null);
     }  
 });
 

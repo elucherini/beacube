@@ -8,10 +8,15 @@ var EventEmitter = require('events').EventEmitter;
 var User = function(username, triggerzone){ // class constructor
 	this.username = username;
 	this.triggerzone = triggerzone;
+	this._state = 'out';
 	
-	this.on('trigger', function() {
-		//console.log("Trigger!");
-  });
+	this.on('in', function() {
+		console.log(this.username + "is IN!");
+  	});
+	
+	this.on('out', function(){
+		console.log(this.username + "is OUT!");
+	});
 };
 
 /****** PUBLIC METHODS ******/
@@ -20,8 +25,17 @@ var User = function(username, triggerzone){ // class constructor
 util.inherits(User, EventEmitter);
 
 /* trigger */
-User.prototype.trigger = function() {
-  this.emit('trigger');
+User.prototype.checkTrigger = function(distance) {
+	if (this.triggerzone!=null && distance<=this.triggerzone){
+		if(this._state == null || this._state=='out'){
+			this._state='in';
+			this.emit('in');
+		}
+	}
+	else if(this.triggerzone!=null && (this._state == null || this._state=='in') ){
+		this._state='out';
+		this.emit('out');
+	}
 };
 
 /* setUsername */

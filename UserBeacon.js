@@ -2,36 +2,31 @@ var KalmanFilter = require('kalmanjs').default;
 var User = require('./User');
 var GreenLed = require('./Led');
 
-const MAX_SAMPLES = 30;
 const TX_POWER = -59; //usually ranges between -59 to -65
 
 /* ************************ 
 *     UserBeacon Class    *
 ***************************/
-var UserBeacon = function(uuid, rssi, username, triggerzone){ //class constructor
+var UserBeacon = function(uuid, rssi){ //class constructor
 	/* Private */
   this._kalmanFilter = new KalmanFilter();
   /* Public */
   this.uuid = uuid;
   this.rssi = rssi;
 	//this.username = username;
-  this.user = new User(username, triggerzone);
+  this.user = new User(null, null);
   this.last = Date.now();
   this.distance = this._computeDistance();
 };
 
 
 /********* PUBLIC METHODS *******************/
-/* ----- touch ---- */
-UserBeacon.prototype.touch = function() {
-	this.last = Date.now();
-};
-
 /* ----- updateRSSI ---- */
-UserBeacon.prototype.updateRSSI = function(rssi) {
+UserBeacon.prototype.update = function(rssi) {
   this.rssi = rssi;
-  this.touch();
+  this.last = Date.now();
   this.distance = this._kalmanFilter.filter(this._computeDistance(rssi));
+  this.user.checkTrigger(this.distance);
 };
 
 /* ----- getJson ---- */
