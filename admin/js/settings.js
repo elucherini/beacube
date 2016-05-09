@@ -26,8 +26,14 @@ if (window.location.search !== "") {
 			console.log(data);
 		});*/
 		
+		$.post("http://localhost:8082/beacons/"+uuid,{username: newName,triggerzone: newTrigger}, function(data){
+            if(data==='done')
+              {
+                alert("Success");
+              }
+          });
 		
-	$.ajax({
+	/*$.ajax({
 			url: 'http://127.0.0.1:8082/beacons/'+uuid,
 			type: 'post',
 			data: { username: newName, triggerzone: newTrigger },
@@ -42,7 +48,7 @@ if (window.location.search !== "") {
 			error: function(jqXHR, textStatus, errorThrown){
 				alert(textStatus);
 			}
-		});
+		});*/
 		
 			/*
 		var json = '{ "username": "' + newName + '", "triggerzone": "' + newTrigger + '" }';

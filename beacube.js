@@ -50,8 +50,10 @@ var BeaconCleaner = setInterval(function(){
 *   RESTful API     *
 *********************/
 var rest = express();
-rest.use(bodyParser.json());
 rest.use(cors());
+//Here we are configuring express to use body-parser as middle-ware.
+rest.use(bodyParser.urlencoded({ extended: false }));
+rest.use(bodyParser.json());
 
 rest.get('/hello', function(req, res) {
   res.send('Welcome to Beacube!');
