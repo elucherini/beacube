@@ -1,4 +1,4 @@
-var client = new $.RestClient('http://131.114.170.108:8082/');
+var client = new $.RestClient('http://127.0.0.1:8082/');
 
 if (window.location.search !== "") {
 	var uuid = window.location.search.replace("?uuid=", "");

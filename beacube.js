@@ -38,7 +38,7 @@ var BeaconCleaner = setInterval(function(){
   var timestamp = Date.now();
   for (var item in userBLE) {
     var ble = userBLE[item];
-    if(ble!=null && (timestamp-ble.last)>2){
+    if(ble!=null && (timestamp-ble.last)>TIME_TO_LIVE*60*1000){
       console.log('DELETED UUID: ' + item);
   	 delete userBLE[item];
     }
