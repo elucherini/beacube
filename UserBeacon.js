@@ -7,14 +7,14 @@ const TX_POWER = -59; //usually ranges between -59 to -65
 /* ************************ 
 *     UserBeacon Class    *
 ***************************/
-var UserBeacon = function(uuid, rssi){ //class constructor
+var UserBeacon = function(uuid, rssi, username, triggerzone){ //class constructor
 	/* Private */
   this._kalmanFilter = new KalmanFilter();
   /* Public */
   this.uuid = uuid;
   this.rssi = rssi;
 	//this.username = username;
-  this.user = new User(null, null);
+  this.user = new User(username, triggerzone);
   this.last = Date.now();
   this.distance = this._computeDistance();
 };

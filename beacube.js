@@ -24,13 +24,21 @@ noble.on('stateChange', function(state) {
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null) {
     	userBLE[peripheral.uuid].update(peripheral.rssi);
-		//if (userBLE[peripheral.uuid].distance <= userBLE[peripheral.uuid].user.triggerzone)		// beacon is in triggerzone
-		//	userBLE[peripheral.uuid].user.trigger();
     	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi);
     }
-    else{
+    else{ //new beacon
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
       userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null);
+      usersDB.findOne({uuid: peripheral.uuid}, function(res){
+        if(res!=null){
+          console.log("Hello " + res.username);
+          userBLE[res.uuid].user.setUsername(res.username);
+          userBLE[res.uuid].user.setTriggerzone(res.triggerzone);
+        }
+        else{
+          console.log("Unkown user..");
+        }
+      });
     }  
 });
 
@@ -45,15 +53,6 @@ var BeaconCleaner = setInterval(function(){
     }
   }
 }, TIME_TO_LIVE*60*1000);
-
-
-/********************
-*   Triggers DB     *
-*********************/
-var triggersDB = new Datastore({ filename: 'DB/triggers.db', autoload: true, inMemoryOnly: false });
-process.on('saveTrigger', function(trigger){
-  triggersDB.insert(trigger);
-});
 
 
 /********************
@@ -105,20 +104,25 @@ rest.post('/beacons/:uuid', function(req, res) {
 	console.log("POST received");
   //console.log(req.body);
 	if (userBLE[req.params.uuid] != null) {
-		//console.log("Values received: " + req.body.username + " " + req.body.triggerzone);
-		
+		//console.log("Values received: " + req.body.username + " " + req.body.triggerzone)
 		if (req.body.username != null){
 			console.log("Username is " + req.body.username );
 			userBLE[req.params.uuid].user.setUsername(req.body.username);
     }
 		else
 			console.log("Username was null");
+
 		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone)){
 			console.log("Triggerzone is " + req.body.triggerzone);
 			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
     }
 		else
 			console.log("Triggerzone was null");
+
+    // save into the DB
+    if(userBLE[req.params.uuid].user!=null){
+      process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone});
+    }
 	}
 	res.json(userBLE[req.params.uuid].getJson());
 });
@@ -142,4 +146,22 @@ var webserver = web.listen(8000, function () {
   var host = webserver.address().address
   var port = webserver.address().port
   console.log("Web App listening at http://%s:%s", host, port)
+});
+
+
+/********************
+*   Triggers DB     *
+*********************/
+var triggersDB = new Datastore({ filename: 'DB/triggers.db', inMemoryOnly: false });
+process.on('storeTrigger', function(trigger){
+  triggersDB.insert(trigger);
+});
+
+
+/********************
+*   Users DB     *
+*********************/
+var usersDB = new Datastore({ filename: 'DB/users.db', inMemoryOnly: false });
+process.on('userRegistration', function(selector, entry){
+  usersDB.upsert(selector, entry);
 });
