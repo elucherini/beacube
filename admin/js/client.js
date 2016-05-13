@@ -16,12 +16,28 @@ setInterval(function() {
 		if (list.responseText !== '[]') {
 			var jResponse = list.responseJSON;
 			for (var i in jResponse) {
-				appendText += '<p>';
-				appendText += '<b>UUID:</b> ' + jResponse[i].uuid + '<br>';
-				appendText += '<b>Distance:</b> ' + jResponse[i].distance + '<br>';
-				appendText += '<b>User:</b> ' + jResponse[i].user + '<br>';
-				appendText += '<b>Trigger zone:</b> ' + jResponse[i].triggerzone;
-				appendText += '</p>';
+				appendText += '<table>';
+					appendText += '<tr>';
+						appendText += '<th>User</th>';
+						appendText += '<td>';
+							appendText += (jResponse[i].user != null)? jResponse[i].user : jResponse[i].uuid + '(not registered)';
+						appendText += '</td>';
+					appendText += '</tr>';
+					appendText += '<tr>';
+						appendText += '<th>Trigger zone</th>';
+						appendText += '<td>';
+							appendText += jResponse[i].triggerzone;
+						appendText += '</td>';
+					appendText += '</tr>';
+					appendText += '<tr>';
+						appendText += '<th>Distance</th>';
+						appendText += '<td>';
+							appendText += jResponse[i].distance;
+						appendText += '</td>';
+					appendText += '</tr>';
+				appendText += '</table>';
+				
+				appendText += '<a href="settings.html?uuid=' + jResponse[i].uuid + '" class="btn btn-primary">Settings</a>';
 			}
 		}
 		else
@@ -38,18 +54,31 @@ setInterval(function() {
 		var jResponse = nearest.responseJSON;
 		
 		if (nearest.responseText !== '') {
-			appendText += '<p>';
-			appendText += '<b>UUID:</b> ' + jResponse.uuid + '<br>';
-			appendText += '<b>Distance:</b> ' + jResponse.distance + '<br>';
-			appendText += '<b>User:</b> ' + jResponse.user + '<br>';
-			appendText += '<b>Trigger zone:</b> ' + jResponse.triggerzone;
-			appendText += '</p>';
+				appendText += '<table>';
+					appendText += '<tr>';
+						appendText += '<th>User</th>';
+						appendText += '<td>';
+							appendText += (jResponse[i].user != null)? jResponse[i].user : jResponse[i].uuid + '(not registered)';
+						appendText += '</td>';
+					appendText += '</tr>';
+					appendText += '<tr>';
+						appendText += '<th>Trigger zone</th>';
+						appendText += '<td>';
+							appendText += jResponse[i].triggerzone;
+						appendText += '</td>';
+					appendText += '</tr>';
+					appendText += '<tr>';
+						appendText += '<th>Distance</th>';
+						appendText += '<td>';
+							appendText += jResponse[i].distance;
+						appendText += '</td>';
+					appendText += '</tr>';
+				appendText += '</table>';
+				
+				appendText += '<a href="settings.html?uuid=' + jResponse[i].uuid + '" class="btn btn-primary">Settings</a>';
 		}
 		else
 			appendText = "No beacons connected";
-		
-		if (jResponse.user == null)	
-			appendText += '<a href="settings.html?uuid=' + jResponse.uuid + '" class="btn btn-primary">Register</a>';
 		$('#nearest-beacon').append(appendText);
 		
 	});
