@@ -12,10 +12,12 @@ var User = function(username, triggerzone){ // class constructor
 	
 	this.on('in', function() {
 		console.log(this.username + "is IN!");
+		process.emit("saveTrigger", {username: this.username, state: 'in', time: Date.now()});
   	});
 	
 	this.on('out', function(){
 		console.log(this.username + "is OUT!");
+		process.emit("saveTrigger", {username: this.username, state: 'out', time: Date.now()});
 	});
 };
 

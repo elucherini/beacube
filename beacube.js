@@ -3,6 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
+var Datastore = require("./Datastore");
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -44,6 +45,15 @@ var BeaconCleaner = setInterval(function(){
     }
   }
 }, TIME_TO_LIVE*60*1000);
+
+
+/********************
+*   Triggers DB     *
+*********************/
+var triggersDB = new Datastore({ filename: 'DB/triggers.db', autoload: true, inMemoryOnly: false });
+process.on('saveTrigger', function(trigger){
+  triggersDB.insert(trigger);
+});
 
 
 /********************
