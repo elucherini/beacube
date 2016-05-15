@@ -8,6 +8,7 @@ var EventEmitter = require('events').EventEmitter;
 var User = function(username, triggerzone){ // class constructor
 	this.username = username;
 	this.triggerzone = triggerzone;
+	this.triggerlist = Array();
 	this._state = 'out';
 	
 	this.on('in', function() {
@@ -53,6 +54,23 @@ User.prototype.getTriggerzone = function() {
 /* setTriggerzone */
 User.prototype.setTriggerzone = function(tz) {
 	this.triggerzone = parseFloat(tz);
+};
+
+/* subscribe to trigger */
+User.prototype.subscribe = function (t, name) {
+	if (triggerlist[name] == null)
+		triggerlist[name] = t;
+};
+
+/* unsubscribe to trigger */
+User.prototype.unsubscribe = function (name) {
+	if (triggerlist[name] != null)
+		delete triggerlist[name];
+};
+
+/*  */
+User.prototype.getSubscriptions = function() {
+	return triggerlist;
 };
 
 module.exports = User;

@@ -9,11 +9,12 @@
   "author": "Pasquale Antonante, Elena Lucherini",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.15.1",
     "cors": "^2.7.1",
     "express": "~4.13.4",
     "kalmanjs": "~1.0.0-beta",
+    "mdns": "^2.3.3",
     "nedb": "^1.8.0",
-    "noble": "~1.5.0",
-    "mdns": "~2.3.3"
+    "noble": "~1.5.0"
   }
 }
