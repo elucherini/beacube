@@ -13,7 +13,7 @@
 ### Ubuntu/Debian/Raspbian ###
 >sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev libavahi-compat-libdnssd-dev
 
-### Fedora / Other-RPM based ###
+### Fedora / Other-RPM based (not tested) ###
 >sudo yum install bluez bluez-libs bluez-libs-devel libavahi-compat-libdnssd-dev
 
 ### Windows ###
