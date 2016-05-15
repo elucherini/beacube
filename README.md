@@ -8,6 +8,7 @@
 ### Linux ###
 * Kernel version 3.6 or above
 * libbluetooth-dev
+* libavahi-compat-libdnssd-dev
 
 ### Ubuntu/Debian/Raspbian ###
 >sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
@@ -40,6 +41,8 @@ This grants the node binary cap_net_raw privileges, so it can start/stop BLE adv
 Note: The above command requires setcap to be installed, it can be installed using the following:
 => apt: >sudo apt-get install libcap2-bin
 => yum: >su -c \'yum install libcap2-bin\'
+
+Note: some warnings appear on linux but it should works fine
 
 ### Multiple Adapters ###
 hci0 is used by default to override set the NOBLE_HCI_DEVICE_ID environment variable to the interface number.

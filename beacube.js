@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
+var mDNS = require('mdns');
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -159,9 +160,17 @@ process.on('storeTrigger', function(trigger){
 
 
 /********************
-*   Users DB     *
+*  	  Users DB      *
 *********************/
 var usersDB = new Datastore({ filename: 'DB/users.db', inMemoryOnly: false });
 process.on('userRegistration', function(selector, entry){
   usersDB.upsert(selector, entry);
 });
+
+
+/********************
+*   Multicast DNS   *
+*********************/
+console.log("[Multicast DNS] Beacube service advertising...");
+var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 8000);
+ad.start();
