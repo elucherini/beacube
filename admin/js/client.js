@@ -1,5 +1,5 @@
 
-var client = new $.RestClient('http://127.0.0.1:8082/');
+var client = new $.RestClient('/');
 client.add('beacons');
 client.add('nearest');
 

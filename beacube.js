@@ -128,27 +128,13 @@ rest.post('/beacons/:uuid', function(req, res) {
 	res.json(userBLE[req.params.uuid].getJson());
 });
 
+rest.use('/admin', express.static(__dirname + '/admin'));
 
-var server = rest.listen(8082, function () {
+var server = rest.listen(80, function () {
   var host = server.address().address
   var port = server.address().port
-  console.log("REST server listening at http://%s:%s", host, port)
+  console.log("REST+WEBAPP server listening at http://%s:%s", host, port)
 });
-
-
-/********************
-*    Web Server     *
-*********************/
-var web = express();
-web.use('/admin', express.static(__dirname + '/admin'));
-web.use(cors());
-
-var webserver = web.listen(8000, function () {
-  var host = webserver.address().address
-  var port = webserver.address().port
-  console.log("Web App listening at http://%s:%s", host, port)
-});
-
 
 /********************
 *   Triggers DB     *
@@ -172,5 +158,5 @@ process.on('userRegistration', function(selector, entry){
 *   Multicast DNS   *
 *********************/
 console.log("[Multicast DNS] Beacube service advertising...");
-var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 8000);
+var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 80);
 ad.start();
