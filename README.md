@@ -11,10 +11,10 @@
 * libavahi-compat-libdnssd-dev
 
 ### Ubuntu/Debian/Raspbian ###
->sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+>sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev libavahi-compat-libdnssd-dev
 
 ### Fedora / Other-RPM based ###
->sudo yum install bluez bluez-libs bluez-libs-devel
+>sudo yum install bluez bluez-libs bluez-libs-devel libavahi-compat-libdnssd-dev
 
 ### Windows ###
 * node-gyp requirements for Windows
