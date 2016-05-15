@@ -23,6 +23,7 @@
 * node-bluetooth-hci-socket prerequisites
     * Compatible Bluetooth 4.0 USB adapter
     * WinUSB driver setup for Bluetooth 4.0 USB adapter, using Zadig tool
+* On Windows you are going to need Apples "Bonjour SDK for Windows". You can download it either from Apple (registration required) or various unofficial sources. Take your pick. After installing the SDK restart your shell or command prompt and make sure the BONJOUR_SDK_HOME environment variable is set. You'll also need a compiler. Microsoft Visual Studio Express will do. On Windows node >=0.7.9 is required.
 
 
 # Setup #
