@@ -26,7 +26,7 @@ if (window.location.search !== "") {
 			console.log(data);
 		});*/
 		
-		$.post("http://localhost:8082/beacons/"+uuid,{username: newName,triggerzone: newTrigger}, function(data){
+		$.post("http://localhost/beacons/"+uuid,{username: newName,triggerzone: newTrigger}, function(data){
             if(data==='done')
               {
                 alert("Success");

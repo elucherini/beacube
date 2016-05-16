@@ -5,6 +5,7 @@ var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var mDNS = require('mdns');
+var Trigger = require("./Trigger");
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -37,7 +38,7 @@ noble.on('discover', function(peripheral) {
           userBLE[res.uuid].user.setTriggerzone(res.triggerzone);
         }
         else{
-          console.log("Unkown user..");
+          console.log("Unknown user..");
         }
       });
     }  
@@ -153,10 +154,18 @@ process.on('userRegistration', function(selector, entry){
   usersDB.upsert(selector, entry);
 });
 
+/********************
+*  Trigger Loader   *
+*********************/
+var trigger = new Trigger();
+trigger.load({ folder: "custom/", subscribe: false }, function(){console.log("Callback!")});
+
 
 /********************
 *   Multicast DNS   *
 *********************/
+/*
 console.log("[Multicast DNS] Beacube service advertising...");
 var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 80);
 ad.start();
+*/
