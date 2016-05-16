@@ -9,8 +9,8 @@
   "author": "Pasquale Antonante, Elena Lucherini",
   "license": "MIT",
   "dependencies": {
+    "bluetooth-hci-socket": "^0.4.4",
     "body-parser": "^1.15.1",
-    "cors": "^2.7.1",
     "express": "~4.13.4",
     "kalmanjs": "~1.0.0-beta",
     "mdns": "^2.3.3",

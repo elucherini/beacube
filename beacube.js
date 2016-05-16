@@ -1,11 +1,10 @@
 var noble = require('noble');
 var express = require('express');
 var bodyParser = require('body-parser');
-var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var mDNS = require('mdns');
-var Trigger = require("./Trigger");
+//var Trigger = require ("./Trigger");
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -61,7 +60,6 @@ var BeaconCleaner = setInterval(function(){
 *   RESTful API     *
 *********************/
 var rest = express();
-rest.use(cors());
 //Here we are configuring express to use body-parser as middle-ware.
 rest.use(bodyParser.urlencoded({ extended: false }));
 rest.use(bodyParser.json());
@@ -157,15 +155,15 @@ process.on('userRegistration', function(selector, entry){
 /********************
 *  Trigger Loader   *
 *********************/
-var trigger = new Trigger();
-trigger.load({ folder: "custom/", subscribe: false }, function(){console.log("Callback!")});
+//var trigger = new Trigger();
+//trigger.load({ folder: "custom/", subscribe: false }, function(){console.log("Callback!")});
 
 
 /********************
 *   Multicast DNS   *
 *********************/
-/*
 console.log("[Multicast DNS] Beacube service advertising...");
 var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 80);
 ad.start();
-*/
+
+
