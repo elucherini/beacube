@@ -195,6 +195,11 @@ process.on('userRegistration', function(selector, entry){
 *  Trigger Loader   *
 *********************/
 var trigger = new Trigger();
+trigger.load({ folder: "custom/", subscribe: false }, function(trigger, filename, subscribe){
+				if (subscribe)
+					for (var item in userBLE)
+						userBLE[item].user.subscribe(trigger, filename);
+			});
 
 
 /********************
