@@ -6,7 +6,6 @@
 <title>Beacube - Home</title>
 
 <link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/datepicker3.css" rel="stylesheet">
 <link href="css/styles.css" rel="stylesheet">
 <link href="css/slider.css" rel="stylesheet">
 
@@ -29,16 +28,6 @@
 					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="index.html"><span>BEA</span>CUBE</a>
-				<ul class="user-menu">
-					<li class="dropdown pull-right">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg> User <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#"><svg class="glyph stroked male-user"><use xlink:href="#stroked-male-user"></use></svg> Profile</a></li>
-							<li><a href="#"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"></use></svg> Settings</a></li>
-							<li><a href="#"><svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Logout</a></li>
-						</ul>
-					</li>
-				</ul>
 			</div>
 							
 		</div><!-- /.container-fluid -->
@@ -52,9 +41,9 @@
 			</div>
 		</form>
 		<ul class="nav menu">
-			<li><a href="index.html"><svg class="glyph stroked dashboard-dial"><use xlink:href="#stroked-dashboard-dial"></use></svg> Home</a></li>
-			<li><a href="settings.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-calendar"></use></svg> Settings</a></li>
-			<li><a href="load.html"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> Load New Code</a></li>
+			<li><a href="index.html"><svg class="glyph stroked home"><use xlink:href="#stroked-home"/></svg> Home</a></li>
+			<li><a href="settings.html"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Settings</a></li>
+			<li><a href="load.html"><svg class="glyph stroked app-window"><use xlink:href="#stroked-app-window"></use></svg> Load New Code</a></li>
 			<!--<li><a href="tables.html"><svg class="glyph stroked table"><use xlink:href="#stroked-table"></use></svg> Tables</a></li>
 			<li class="active"><a href="forms.html"><svg class="glyph stroked pencil"><use xlink:href="#stroked-pencil"></use></svg> Forms</a></li>
 			<li><a href="panels.html"><svg class="glyph stroked app-window"><use xlink:href="#stroked-app-window"></use></svg> Alerts &amp; Panels</a></li>
@@ -115,7 +104,12 @@
 							<form role="form" id="form-settings">
 								<div class="form-group" id="settings">
 									<label>URL of the repository</label>
-									<input class="form-control" placeholder="URL" id="name-bar">					<!-- placeholder = current name -->
+									<input class="form-control" placeholder="URL" id="name-bar">
+									<div class="checkbox" id="subscribe">
+										<label>
+											<input type="checkbox" value="subscribe">Automatically subscribe all connected users to the new code
+										</label>
+									</div>
 									<button type="submit" class="btn btn-primary" id="submit-button">Upload</button>
 								</div>
 							</form>
@@ -131,16 +125,7 @@
 	<!--<script src="js/jquery-1.11.1.min.js"></script>-->
 	<script src="js/jquery-1.9.0.js"></script>
 	<script src="js/jquery-migrate-1.0.0.js"></script>
-	<!--<script src="js/chart.min.js"></script>
-	<script src="js/chart-data.js"></script>
-	<script src="js/easypiechart.js"></script>
-	<script src="js/easypiechart-data.js"></script>
-	<script src="js/bootstrap-datepicker.js"></script>
-	<script src="js/jquery.rest.min.js"></script>-->
 	<script src="js/jquery.rest.js"></script>
-	<!--<script src="js/settings.js"></script>
-	<script src="js/slider.js"></script>
-	<script src="js/client.js"></script>-->
 	<script>
 		!function ($) {
 			$(document).on("click","ul.nav li.parent > a > span.icon", function(){		  
