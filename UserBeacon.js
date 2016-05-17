@@ -1,6 +1,5 @@
 var KalmanFilter = require('kalmanjs').default;
 var User = require('./User');
-var GreenLed = require('./Led');
 
 const TX_POWER = -59; //usually ranges between -59 to -65
 
