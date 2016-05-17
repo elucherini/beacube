@@ -4,12 +4,7 @@ var bodyParser = require('body-parser');
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var mDNS = require('mdns');
-<<<<<<< HEAD
-var Trigger = require("./Trigger");
-var Test = require("./custom/test");
-=======
-//var Trigger = require ("./Trigger");
->>>>>>> a281ea1511208ebc52a31889d2c8345a855af45f
+var Trigger = require ("./Trigger");
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -199,26 +194,12 @@ process.on('userRegistration', function(selector, entry){
 /********************
 *  Trigger Loader   *
 *********************/
-<<<<<<< HEAD
 var trigger = new Trigger();
-=======
-//var trigger = new Trigger();
-//trigger.load({ folder: "custom/", subscribe: false }, function(){console.log("Callback!")});
->>>>>>> a281ea1511208ebc52a31889d2c8345a855af45f
 
 
 /********************
 *   Multicast DNS   *
 *********************/
-<<<<<<< HEAD
-
 console.log("[Multicast DNS] Beacube service advertising...");
 var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 80);
 ad.start();
-=======
-console.log("[Multicast DNS] Beacube service advertising...");
-var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 80);
-ad.start();
-
-
->>>>>>> a281ea1511208ebc52a31889d2c8345a855af45f
