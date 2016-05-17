@@ -156,17 +156,17 @@ rest.post('/unsubscribe/:uuid', function(req, res) {
 });
 
 rest.post('/triggerlist/', function(req, res) {
-		if (req.body.url != null) {
-			// DOWNLOAD
-			
-			// IN DOWNLOAD CALLBACK:
-			trigger.load({ folder: "custom/", subscribe: req.body.subscribe }, function(trigger, filename, subscribe){
-				if (subscribe)
-					for (var item in userBLE)
-						userBLE[item].user.subscribe(trigger, filename);
-			});
-			res.sendStatus(200);
-		}
+	if (req.body.url != null) {
+		// DOWNLOAD
+		
+		// IN DOWNLOAD CALLBACK:
+		trigger.load({ folder: "custom/", subscribe: req.body.subscribe }, function(trigger, filename, subscribe){
+			if (subscribe)
+				for (var item in userBLE)
+					userBLE[item].user.subscribe(trigger, filename);
+		});
+		res.sendStatus(200);
+	}
 });
 
 rest.get('/triggerlist', function(req,res) {

@@ -14,7 +14,7 @@ setInterval(function() {
 		
 		var appendCode = '';
 		if (list.responseText !== '[]') {
-			var jResponse = list.responseJSON;
+			var jResponse = JSON.parse(list.responseText);
 			for (var i in jResponse) {
 				appendCode += '<table>';
 					appendCode += '<tr>';
@@ -43,7 +43,7 @@ setInterval(function() {
 		else
 			appendCode = "No beacons connected";
 		$('#beacon-list').append(appendCode);
-});
+	});
 	// print nearest beacon
 	nearest = client.nearest.read();
 	
@@ -51,14 +51,14 @@ setInterval(function() {
 		$('#nearest-beacon').empty();
 		
 		var appendCode = '';
-		var jResponse = nearest.responseJSON;
+		var jResponse = JSON.parse(nearest.responseText);
 		
 		if (nearest.responseText !== '') {
 				appendCode += '<table>';
 					appendCode += '<tr>';
 						appendCode += '<th>User</th>';
 						appendCode += '<td>';
-							appendCode += (jResponse.user != null)? jResponse.user : jResponse.uuid + '(not registered)';
+							appendCode += (jResponse.user !== null)? jResponse.user : jResponse.uuid + ' (not registered)';
 						appendCode += '</td>';
 					appendCode += '</tr>';
 					appendCode += '<tr>';
