@@ -1,11 +1,11 @@
 var noble = require('noble');
 var express = require('express');
 var bodyParser = require('body-parser');
-var cors = require('cors');
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var mDNS = require('mdns');
 var Trigger = require("./Trigger");
+var Test = require("./custom/test");
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -61,7 +61,6 @@ var BeaconCleaner = setInterval(function(){
 *   RESTful API     *
 *********************/
 var rest = express();
-rest.use(cors());
 //Here we are configuring express to use body-parser as middle-ware.
 rest.use(bodyParser.urlencoded({ extended: false }));
 rest.use(bodyParser.json());
@@ -110,23 +109,62 @@ rest.post('/beacons/:uuid', function(req, res) {
 		if (req.body.username != null){
 			console.log("Username is " + req.body.username );
 			userBLE[req.params.uuid].user.setUsername(req.body.username);
-    }
+		}
 		else
 			console.log("Username was null");
 
 		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone)){
 			console.log("Triggerzone is " + req.body.triggerzone);
 			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
-    }
+		}
 		else
 			console.log("Triggerzone was null");
 
-    // save into the DB
-    if(userBLE[req.params.uuid].user!=null){
-      process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone});
-    }
+		// save into the DB
+		if(userBLE[req.params.uuid].user!=null){
+		  process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone});
+		}
 	}
 	res.json(userBLE[req.params.uuid].getJson());
+});
+
+rest.post('/triggerlist/', function(req, res) {
+		if (req.body.url != null) {
+			// DOWNLOAD
+			
+			// IN DOWNLOAD CALLBACK:
+			trigger.load({ folder: "custom/", subscribe: req.body.subscribe }, function(trigger, filename, subscribe){
+				if (subscribe)
+					for (var item in userBLE)
+						userBLE[item].user.subscribe(trigger, filename);
+			});
+			
+		}
+});
+
+rest.get('/triggerlist', function(req,res) {
+	var result = [];
+	for (var item in trigger.list) {
+		result.push({ name: item });
+  }
+	res.json(result);
+});
+
+rest.get('/triggerlist/:uuid', function(req,res) {
+	var result = [];
+	for (var item in trigger.list) {
+		var sub;
+		if (req.params.uuid != null && userBLE[req.params.uuid] != null) {
+			if (item in userBLE[req.params.uuid].user.triggerlist)
+				sub = "yes";
+			else
+				sub = "no";
+		}
+		else
+			sub = "undefined";
+		result.push({ name: item, subscribed: sub });
+  }
+	res.json(result);
 });
 
 rest.use('/admin', express.static(__dirname + '/admin'));
@@ -158,14 +196,12 @@ process.on('userRegistration', function(selector, entry){
 *  Trigger Loader   *
 *********************/
 var trigger = new Trigger();
-trigger.load({ folder: "custom/", subscribe: false }, function(){console.log("Callback!")});
 
 
 /********************
 *   Multicast DNS   *
 *********************/
-/*
+
 console.log("[Multicast DNS] Beacube service advertising...");
 var ad = mDNS.createAdvertisement(mDNS.tcp('beacube'), 80);
 ad.start();
-*/

@@ -68,7 +68,7 @@ User.prototype.unsubscribe = function (name) {
 		delete triggerlist[name];
 };
 
-/*  */
+/* list of triggers user is subscribed to */
 User.prototype.getSubscriptions = function() {
 	return triggerlist;
 };

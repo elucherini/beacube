@@ -1,6 +1,6 @@
 
-var Test = function() {
-	this.value = 3;
+var test = function(that) {
+	console.log("TEST VALUE: " + that);
 };
 
-module.exports = Test;
+module.exports = test;
