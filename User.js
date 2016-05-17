@@ -58,14 +58,18 @@ User.prototype.setTriggerzone = function(tz) {
 
 /* subscribe to trigger */
 User.prototype.subscribe = function (t, name) {
-	if (!(name in this.triggerlist))
+	if (!(name in this.triggerlist)) {
 		this.triggerlist[name] = t;
+		console.log(this.username + " subscribed to " + name);
+	}
 };
 
 /* unsubscribe to trigger */
 User.prototype.unsubscribe = function (name) {
-	if (name in this.triggerlist)
+	if (name in this.triggerlist) {
 		delete this.triggerlist[name];
+		console.log(this.username + " unsubscribed from " + name);
+	}
 };
 
 /* list of triggers user is subscribed to */

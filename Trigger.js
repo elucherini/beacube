@@ -9,6 +9,7 @@ var Trigger = function() {
 Trigger.prototype.load = function (params, callback) {		// params = {	folder: '(path)',
 															//				subscribe: true	}
 	var that = this;
+	console.log("Loading files from %s...", params.folder);
 	
 	fs.readdir(params.folder, function (err, files) {
 		if (err == null) {
@@ -32,7 +33,7 @@ Trigger.prototype.load = function (params, callback) {		// params = {	folder: '(
 				}
 				
 				that.list[filename] = require('./' + params.folder + filename);
-				console.log(filename + " loaded. Require on: " + './' + params.folder + filename);
+				console.log(filename + " loaded");
 				
 				if (params.subscribe) {
 					//console.log("Subscription requested for " + filename);

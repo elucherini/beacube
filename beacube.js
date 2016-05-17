@@ -105,7 +105,7 @@ rest.post('/beacons/:uuid', function(req, res) {
   //console.log(req.body);
 	if (userBLE[req.params.uuid] != null) {
 		//console.log("Values received: " + req.body.username + " " + req.body.triggerzone)
-		if (req.body.username != null){
+		if (req.body.username != null && req.body.username !== ""){
 			console.log("Username is " + req.body.username );
 			userBLE[req.params.uuid].user.setUsername(req.body.username);
 		}
@@ -123,8 +123,36 @@ rest.post('/beacons/:uuid', function(req, res) {
 		if(userBLE[req.params.uuid].user!=null){
 		  process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone});
 		}
+		res.sendStatus(200);
 	}
-	res.json(userBLE[req.params.uuid].getJson());
+	else
+		res.sendStatus(404);
+});
+
+rest.post('/subscribe/:uuid', function(req, res) {
+	if (req.params.uuid != null) {
+		if (req.body.name in trigger.list && !(req.body.name in userBLE[req.params.uuid].user.triggerlist)) {
+			userBLE[req.params.uuid].user.subscribe(trigger.list[req.body.name], req.body.name);
+			res.sendStatus(200);
+		}
+		else
+			res.sendStatus(404);
+	}
+	else
+		res.sendStatus(404);
+});
+
+rest.post('/unsubscribe/:uuid', function(req, res) {
+	if (req.params.uuid != null) {
+		if (req.body.name in userBLE[req.params.uuid].user.triggerlist) {
+			userBLE[req.params.uuid].user.unsubscribe(req.body.name);
+			res.sendStatus(200);
+		}
+		else
+			res.sendStatus(404);
+	}
+	else
+		res.sendStatus(404);
 });
 
 rest.post('/triggerlist/', function(req, res) {
@@ -137,22 +165,8 @@ rest.post('/triggerlist/', function(req, res) {
 					for (var item in userBLE)
 						userBLE[item].user.subscribe(trigger, filename);
 			});
-			
+			res.sendStatus(200);
 		}
-});
-
-rest.post('/subscribe/:uuid', function(req, res) {
-	if (req.params.uuid != null) {
-		if (req.body.name in trigger.list)
-			userBLE[req.params.uuid].user.subscribe(trigger.list[req.body.name], req.body.name);
-	}
-});
-
-rest.post('/unsubscribe/:uuid', function(req, res) {
-	if (req.params.uuid != null) {
-		if (req.body.name in trigger.list)
-			userBLE[req.params.uuid].user.unsubscribe(req.body.name);
-	}
 });
 
 rest.get('/triggerlist', function(req,res) {
@@ -196,7 +210,6 @@ process.on('storeTrigger', function(trigger){
   triggersDB.insert(trigger);
 });
 
-
 /********************
 *  	  Users DB      *
 *********************/
@@ -210,11 +223,10 @@ process.on('userRegistration', function(selector, entry){
 *********************/
 var trigger = new Trigger();
 trigger.load({ folder: "custom/", subscribe: false }, function(trigger, filename, subscribe){
-				if (subscribe)
-					for (var item in userBLE)
-						userBLE[item].user.subscribe(trigger, filename);
-			});
-
+	if (subscribe)
+		for (var item in userBLE)
+			userBLE[item].user.subscribe(trigger, filename);
+});
 
 /********************
 *   Multicast DNS   *
