@@ -141,6 +141,20 @@ rest.post('/triggerlist/', function(req, res) {
 		}
 });
 
+rest.post('/subscribe/:uuid', function(req, res) {
+	if (req.params.uuid != null) {
+		if (req.body.name in trigger.list)
+			userBLE[req.params.uuid].user.subscribe(trigger.list[req.body.name], req.body.name);
+	}
+});
+
+rest.post('/unsubscribe/:uuid', function(req, res) {
+	if (req.params.uuid != null) {
+		if (req.body.name in trigger.list)
+			userBLE[req.params.uuid].user.unsubscribe(req.body.name);
+	}
+});
+
 rest.get('/triggerlist', function(req,res) {
 	var result = [];
 	for (var item in trigger.list) {

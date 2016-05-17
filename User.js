@@ -58,19 +58,19 @@ User.prototype.setTriggerzone = function(tz) {
 
 /* subscribe to trigger */
 User.prototype.subscribe = function (t, name) {
-	if (triggerlist[name] == null)
-		triggerlist[name] = t;
+	if (!(name in this.triggerlist))
+		this.triggerlist[name] = t;
 };
 
 /* unsubscribe to trigger */
 User.prototype.unsubscribe = function (name) {
-	if (triggerlist[name] != null)
-		delete triggerlist[name];
+	if (name in this.triggerlist)
+		delete this.triggerlist[name];
 };
 
 /* list of triggers user is subscribed to */
 User.prototype.getSubscriptions = function() {
-	return triggerlist;
+	return this.triggerlist;
 };
 
 module.exports = User;
