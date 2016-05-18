@@ -242,6 +242,14 @@ watcher.on('unlink', function(path) {
 			userBLE[item].user.unsubscribe(name);
 	});
 });
+watcher.on('change', function(path) {
+	console.log(path + " has been changed!");
+	var dir = path.split('/')[0];
+	var file = path.split('/')[1];
+	dir = path.split('\\')[0];			// Windows
+	file = path.split('\\')[1];
+	trigger.update({ folder: dir + '/', subscribe: false }, file);
+});
 
 watcher.on('error', function(error) {
 	console.log(error);

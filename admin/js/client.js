@@ -2,20 +2,39 @@
 var client = new $.RestClient('/');
 client.add('beacons');
 client.add('nearest');
+client.add('triggerlist');
 
-var list, nearest;
+var list, nearest, triggers;
+var appendTriggers = '';
 
 setInterval(function() {
 	// print list of beacons
 	list = client.beacons.read();
 	
-	list.always(function(data) {	
+	list.always(function() {	
 		$('#beacon-list').empty();
 		
 		var appendCode = '';
 		if (list.responseText !== '[]') {
 			var jResponse = JSON.parse(list.responseText);
 			for (var i in jResponse) {
+				triggers = client.triggerlist.read(jResponse[i].uuid);
+				
+				triggers.always(function() {
+					appendTriggers = '';
+					if (triggers.responseText !== '[]') {
+						var jTriggers = JSON.parse(triggers.responseText);
+						for (var j in jTriggers) {
+							if (jTriggers[j].subscribed === "yes") {
+								appendTriggers += jTriggers[j].name + " ";
+							}
+						}
+					}
+					if (appendTriggers === '')
+						appendTriggers = "No triggers";
+				});
+				
+				console.log(appendTriggers);
 				appendCode += '<table>';
 					appendCode += '<tr>';
 						appendCode += '<th>User</th>';
@@ -27,6 +46,12 @@ setInterval(function() {
 						appendCode += '<th>Trigger zone</th>';
 						appendCode += '<td>';
 							appendCode += jResponse[i].triggerzone;
+						appendCode += '</td>';
+					appendCode += '</tr>';
+					appendCode += '<tr>';
+						appendCode += '<th>Triggers</th>';
+						appendCode += '<td>';
+							appendCode += appendTriggers;
 						appendCode += '</td>';
 					appendCode += '</tr>';
 					appendCode += '<tr>';
@@ -59,18 +84,6 @@ setInterval(function() {
 						appendCode += '<th>User</th>';
 						appendCode += '<td>';
 							appendCode += (jResponse.user !== null)? jResponse.user : jResponse.uuid + ' (not registered)';
-						appendCode += '</td>';
-					appendCode += '</tr>';
-					appendCode += '<tr>';
-						appendCode += '<th>Trigger zone</th>';
-						appendCode += '<td>';
-							appendCode += jResponse.triggerzone;
-						appendCode += '</td>';
-					appendCode += '</tr>';
-					appendCode += '<tr>';
-						appendCode += '<th>Distance</th>';
-						appendCode += '<td>';
-							appendCode += jResponse.distance;
 						appendCode += '</td>';
 					appendCode += '</tr>';
 				appendCode += '</table>';
