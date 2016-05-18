@@ -11,6 +11,7 @@
   "dependencies": {
     "bluetooth-hci-socket": "^0.4.4",
     "body-parser": "^1.15.1",
+    "chokidar": "^1.5.0",
     "express": "~4.13.4",
     "kalmanjs": "~1.0.0-beta",
     "mdns": "^2.3.3",

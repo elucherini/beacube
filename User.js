@@ -72,9 +72,4 @@ User.prototype.unsubscribe = function (name) {
 	}
 };
 
-/* list of triggers user is subscribed to */
-User.prototype.getSubscriptions = function() {
-	return this.triggerlist;
-};
-
 module.exports = User;

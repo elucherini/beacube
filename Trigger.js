@@ -5,8 +5,8 @@ var path = require('path'),
 var Trigger = function() {
 	this.list = new Array();
 };
-
-Trigger.prototype.load = function (params, callback) {		// params = {	folder: '(path)',
+/*
+Trigger.prototype.loadAll = function (params, callback) {		// params = {	folder: '(path)',
 															//				subscribe: true	}
 	var that = this;
 	console.log("Loading files from %s...", params.folder);
@@ -21,10 +21,10 @@ Trigger.prototype.load = function (params, callback) {		// params = {	folder: '(
 				
 				if (file.split(".")[1] !== 'js') {
 					//console.log("File " + file + " is not a js file!!");
-					return;
+					continue;
 				}
 				
-				var filename = file.split(".")[0].toLowerCase();
+				var filename = file.split(".")[0];
 				//console.log("File " + file + " is a js file. Name: " + filename);
 				
 				if (filename in that.list) {		// MUST BE TESTED
@@ -33,6 +33,7 @@ Trigger.prototype.load = function (params, callback) {		// params = {	folder: '(
 				}
 				
 				that.list[filename] = require('./' + params.folder + filename);
+				//watcher.add(params.folder + file, { persistent: true, alwaysStat: true });
 				console.log(filename + " loaded");
 				
 				if (params.subscribe) {
@@ -50,10 +51,41 @@ Trigger.prototype.load = function (params, callback) {		// params = {	folder: '(
 			//console.log("Attempting to read files in custom directory. ERROR: " + err);
 		}
     });
-}
+};
+*/
+Trigger.prototype.load = function (params, file, callback) {			//	params = {	folder: '(path)',
+																		//	subscribe: true	}
+															
+	if (file.split(".")[1] !== "js") {
+		console.log(file + " is not a .js file or belongs to a subfolder, won't be loaded");
+		return;
+	}
+	var filename = file.split(".")[0];
+	
+	this.list[filename] = require('./' + params.folder + filename);
+	console.log(filename + " loaded");
+	
+	if (params.subscribe)
+		callback(this.list[filename], filename);
+};
 
-Trigger.prototype.getList = function () {
-	return this.list;
+Trigger.prototype.delete = function (params, file, callback) {			//	params = {	folder: '(path)',
+																		//	unsubscribe: true	}				
+	if (file.split(".")[1] !== "js")
+		return;
+	var filename = file.split(".")[0];
+	
+	if (filename in this.list) {
+		console.log(filename + " already here. Deleting cache entry...");
+		delete require.cache[require.resolve('./' + params.folder + filename)];
+		delete this.list[filename];
+		console.log(filename + " deleted");
+	}
+	else
+		console.log(filename + " is not in the list, won't be deleted");
+	
+	if (params.unsubscribe)
+		callback(filename);
 };
 
 module.exports = Trigger;

@@ -1,6 +1,7 @@
 var noble = require('noble');
 var express = require('express');
 var bodyParser = require('body-parser');
+var chokidar = require('chokidar');
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var mDNS = require('mdns');
@@ -155,18 +156,17 @@ rest.post('/unsubscribe/:uuid', function(req, res) {
 		res.sendStatus(404);
 });
 
-rest.post('/triggerlist/', function(req, res) {
+rest.post('/triggerlist', function(req, res) {		// TODO: FINISH
 	if (req.body.url != null) {
 		// DOWNLOAD
 		
 		// IN DOWNLOAD CALLBACK:
-		trigger.load({ folder: "custom/", subscribe: req.body.subscribe }, function(trigger, filename, subscribe){
-			if (subscribe)
-				for (var item in userBLE)
-					userBLE[item].user.subscribe(trigger, filename);
-		});
+		// load new trigger and add it to trigger.list
+		//trigger.load({ folder: "custom/", subscribe: req.body.subscribe });
 		res.sendStatus(200);
 	}
+	else
+		res.sendStatus(404);
 });
 
 rest.get('/triggerlist', function(req,res) {
@@ -219,15 +219,33 @@ process.on('userRegistration', function(selector, entry){
 });
 
 /********************
-*  Trigger Loader   *
+*  Trigger Watcher   *
 *********************/
 var trigger = new Trigger();
-trigger.load({ folder: "custom/", subscribe: false }, function(trigger, filename, subscribe){
-	if (subscribe)
+var watcher = chokidar.watch('custom/', { ignored: /[\/\\]\./, /*ignored: /.*[^js]$/,*/ persistent: true });
+watcher.on('add', function(path) {
+	console.log(path + " has been added!");
+	var dir = path.split('/')[0];
+	var file = path.split('/')[1];
+	dir = path.split('\\')[0];			// Windows
+	file = path.split('\\')[1];
+	trigger.load({ folder: dir + '/', subscribe: false }, file);
+});
+watcher.on('unlink', function(path) {
+	console.log(path + " has been deleted!");
+	var dir = path.split('/')[0];
+	var file = path.split('/')[1];
+	dir = path.split('\\')[0];			// Windows
+	file = path.split('\\')[1];
+	trigger.delete({ folder: dir + '/', unsubscribe: true }, file, function(name) {
 		for (var item in userBLE)
-			userBLE[item].user.subscribe(trigger, filename);
+			userBLE[item].user.unsubscribe(name);
+	});
 });
 
+watcher.on('error', function(error) {
+	console.log(error);
+});
 /********************
 *   Multicast DNS   *
 *********************/
