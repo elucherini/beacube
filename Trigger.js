@@ -92,8 +92,7 @@ Trigger.prototype.delete = function (params, file, callback) {			//	params = {	f
 		callback(filename);
 };
 
-Trigger.prototype.update = function (params, file, callback) {			//	params = {	folder: '(path)',
-																		//	unsubscribe: true	}				
+Trigger.prototype.update = function (params, file, callback) {			//	params = { folder: '(path)' }				
 	if (file.split(".")[1] !== "js")
 		return;
 	var filename = file.split(".")[0];
@@ -106,9 +105,10 @@ Trigger.prototype.update = function (params, file, callback) {			//	params = {	f
 	}
 	else
 		console.log(filename + " is not in the list, won't be changed\n");
-	
+	/*
 	if (params.subscribe)
 		callback(this.list[filename], filename);
+	*/
 };
 
 module.exports = Trigger;

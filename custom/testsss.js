@@ -1,6 +1,6 @@
 
 var test = function(that) {
-	console.log("TEST VALUE: " + that);
+	console.log("TEST: " + that);
 };
 
 module.exports = test;

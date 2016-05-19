@@ -13,11 +13,19 @@ var User = function(username, triggerzone){ // class constructor
 	
 	this.on('in', function() {
 		console.log(this.username + " is IN!");
+		if (this.triggerlist != undefined) {
+			for (var item in this.triggerlist)
+				this.triggerlist[item].apply(this, ['in']);
+		}
 		process.emit("storeTrigger", {username: this.username, state: 'in', time: Date.now()});
   	});
 	
 	this.on('out', function(){
 		console.log(this.username + " is OUT!");
+		if (this.triggerlist != undefined) {
+			for (var item in this.triggerlist)
+				this.triggerlist[item].apply(this, ['out']);
+		}
 		process.emit("storeTrigger", {username: this.username, state: 'out', time: Date.now()});
 	});
 };
