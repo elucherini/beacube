@@ -6,6 +6,7 @@ var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var mDNS = require('mdns');
 var Trigger = require ("./Trigger");
+var os = require('os');
 
 const TIME_TO_LIVE = 3; //minutes
 
@@ -227,16 +228,20 @@ watcher.on('add', function(path) {
 	console.log(path + " has been added!");
 	var dir = path.split('/')[0];
 	var file = path.split('/')[1];
-	dir = path.split('\\')[0];			// Windows
-	file = path.split('\\')[1];
+	if(os.type() == "Windows_NT"){
+		dir = path.split('\\')[0];			// Windows
+		file = path.split('\\')[1];
+	}
 	trigger.load({ folder: dir + '/', subscribe: false }, file);
 });
 watcher.on('unlink', function(path) {
 	console.log(path + " has been deleted!");
 	var dir = path.split('/')[0];
 	var file = path.split('/')[1];
-	dir = path.split('\\')[0];			// Windows
-	file = path.split('\\')[1];
+	if(os.type() == "Windows_NT"){
+		dir = path.split('\\')[0];			// Windows
+		file = path.split('\\')[1];
+	}
 	trigger.delete({ folder: dir + '/', unsubscribe: true }, file, function(name) {
 		for (var item in userBLE)
 			userBLE[item].user.unsubscribe(name);
@@ -246,8 +251,10 @@ watcher.on('change', function(path) {
 	console.log(path + " has been changed!");
 	var dir = path.split('/')[0];
 	var file = path.split('/')[1];
-	dir = path.split('\\')[0];			// Windows
-	file = path.split('\\')[1];
+	if(os.type() == "Windows_NT"){
+		dir = path.split('\\')[0];			// Windows
+		file = path.split('\\')[1];
+	}
 	trigger.update({ folder: dir + '/', subscribe: false }, file);
 });
 
