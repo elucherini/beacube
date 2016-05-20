@@ -7,7 +7,7 @@ var rangeSlider = function(){
 
     value.each(function(){
       var value = $(this).prev().attr('value');
-      $(this).html(value);
+	  $(this).html(value);
     });
 
     range.on('input', function(){
