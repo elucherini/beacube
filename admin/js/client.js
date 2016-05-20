@@ -20,7 +20,7 @@ setInterval(function() {
 			for (var i in jResponse) {
 				triggers = client.triggerlist.read(jResponse[i].uuid);
 				
-				triggers.always(function() {
+				triggers.always(function() {		// prints trigger list
 					appendTriggers = '';
 					if (triggers.responseText !== '[]') {
 						var jTriggers = JSON.parse(triggers.responseText);
@@ -39,7 +39,7 @@ setInterval(function() {
 					appendCode += '<tr>';
 						appendCode += '<th>User</th>';
 						appendCode += '<td>';
-							appendCode += (jResponse[i].user != null)? jResponse[i].user : jResponse[i].uuid + '(not registered)';
+							appendCode += (jResponse[i].user != null)? jResponse[i].user : jResponse[i].uuid + ' (not registered)';
 						appendCode += '</td>';
 					appendCode += '</tr>';
 					appendCode += '<tr>';

@@ -20,6 +20,10 @@ a, a:hover, a:focus {
 	color: #30a5ff;
 }
 
+#beacon-list a, #nearest-beacon a{
+	margin: 5px;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	color: #5f6468;
 }
@@ -819,6 +823,11 @@ h1.page-header {
 }
 
 /*Tables*/
+table {
+	border-collapse: separate;
+	border-spacing: 10px 0;
+}
+
 .table {
 	background: #fff;
 	border-spacing: 5px;
