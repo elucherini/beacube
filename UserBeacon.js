@@ -33,6 +33,30 @@ UserBeacon.prototype.getJson = function(){
   return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, last: this.last, user: this.user.username, triggerzone: this.user.triggerzone};
 };
 
+UserBeacon.prototype.subscribeUser = function(trigger, name){
+  if (trigger!=null && name!=null) {
+      var ok = this.user.subscribe(trigger, name);
+      if(ok) process.emit('triggerSubscription', {uuid: this.uuid}, {triggerlist: this.user.getTriggersArray()});
+      return ok;
+    }
+    else
+      return false;
+};
+
+UserBeacon.prototype.unsubscribeUser = function(triggerName){
+  if (trigger!=null) {
+      var ok = this.user.unsubscribe(triggerName);
+      if(ok) process.emit('triggerSubscription', {uuid: this.uuid}, {triggerlist: this.user.getTriggersArray()});
+      return ok;
+    }
+    else
+      return false;
+};
+
+UserBeacon.prototype.isSubscribed = function (trigger) {
+  return this.user.isSubscribed(trigger);
+};
+
 /********** PRIVATE METHODS ******************/
 /* ----- calculateDistance ---- */
 UserBeacon.prototype._computeDistance = function(rssi) {

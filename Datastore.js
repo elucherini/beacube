@@ -36,6 +36,18 @@ Datastore.prototype.upsert = function(selector,entry) {
 	}
 }
 
+Datastore.prototype.update = function(selector, entry, multiAllowed) {
+	if(selector!=null && entry!=null){
+		if(multiAllowed==undefined)
+			multiAllowed = true;
+		this.db.update(selector, { $set: entry }, { multi: multiAllowed}, function (err, numReplaced) {
+			if(err!=null){
+				console.log("Error updating in " + this.params.filename + ": " + err);
+			}
+		});
+	}
+}
+
 
 Datastore.prototype.findOne = function(query, callback) {
 	if(query!=null){

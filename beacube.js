@@ -11,18 +11,15 @@ var os = require('os');
 const TIME_TO_LIVE = 3; //minutes
 
 userBLE = Array();
+trigger = new Trigger();
 
 /********************
 *   Noble Setup     *
 *********************/
-noble.on('stateChange', function(state) {
-  if (state === 'poweredOn') {
-    noble.startScanning([],true);
-    console.log('BLE scanning...\n');
-  } else {
-    noble.stopScanning();
-  }
-});
+function startBLEscan(){	//executed after module dir scan is completed
+	noble.startScanning([],true);
+	console.log("[BLE scan] started....")
+}
 
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null) {
@@ -31,16 +28,21 @@ noble.on('discover', function(peripheral) {
     }
     else{ //new beacon
     	console.log('DISCOVERED UUID: ' + peripheral.uuid);
-      userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null);
-      usersDB.findOne({uuid: peripheral.uuid}, function(res){
-        if(res!=null){
-          console.log("Hello " + res.username);
-          userBLE[res.uuid].user.setUsername(res.username);
-          userBLE[res.uuid].user.setTriggerzone(res.triggerzone);
-        }
-        else{
-          console.log("Unknown user..");
-        }
+		userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null);
+		// retrive record from DB
+		usersDB.findOne({uuid: peripheral.uuid}, function(res){
+	        if(res!=null){
+	          console.log("Hello " + res.username);
+	          userBLE[res.uuid].user.setUsername(res.username);
+	          for(var t in res.triggerlist){
+	          	var triggerName = res.triggerlist[t];
+	          	userBLE[res.uuid].subscribeUser(trigger.getCode(triggerName), triggerName);
+	          }
+	          userBLE[res.uuid].user.setTriggerzone(res.triggerzone);
+	        }
+	        else{
+	          console.log("Unknown user..");
+	        }
       });
     }  
 });
@@ -67,15 +69,15 @@ rest.use(bodyParser.urlencoded({ extended: false }));
 rest.use(bodyParser.json());
 
 rest.get('/hello', function(req, res) {
-  res.send('Welcome to Beacube!');
+	res.send('Welcome to Beacube!');
 });
 
 rest.get('/beacons', function(req,res) {
 	var result = [];
 	for (var item in userBLE) {
-    var ble = userBLE[item].getJson();
-    result.push(ble);
-  }
+    	var ble = userBLE[item].getJson();
+    	result.push(ble);
+    }
 	res.json(result);
 });
 
@@ -104,26 +106,19 @@ rest.get('/nearest', function(req, res) {
 /* Edits username and trigger zone */
 rest.post('/beacons/:uuid', function(req, res) {
 	console.log("POST received");
-  //console.log(req.body);
+	//console.log(req.body);
 	if (userBLE[req.params.uuid] != null) {
-		//console.log("Values received: " + req.body.username + " " + req.body.triggerzone)
 		if (req.body.username != null && req.body.username !== ""){
 			console.log("Username is " + req.body.username );
 			userBLE[req.params.uuid].user.setUsername(req.body.username);
 		}
-		else
-			console.log("Username was null");
-
 		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone)){
 			console.log("Triggerzone is " + req.body.triggerzone);
 			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
 		}
-		else
-			console.log("Triggerzone was null");
-
 		// save into the DB
 		if(userBLE[req.params.uuid].user!=null){
-		  process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone});
+		  process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone, triggerlist: []});
 		}
 		res.sendStatus(200);
 	}
@@ -132,10 +127,11 @@ rest.post('/beacons/:uuid', function(req, res) {
 });
 
 rest.post('/subscribe/:uuid', function(req, res) {
-	if (req.params.uuid != null) {
-		if (req.body.name in trigger.list && !(req.body.name in userBLE[req.params.uuid].user.triggerlist)) {
-			userBLE[req.params.uuid].user.subscribe(trigger.list[req.body.name], req.body.name);
-			res.sendStatus(200);
+	if (req.params.uuid != null && userBLE[req.params.uuid] != null) {
+		if (req.body.name in trigger.list) {
+			var ok = userBLE[req.params.uuid].subscribeUser(trigger.getCode(req.body.name), req.body.name);
+			if (ok) res.sendStatus(200);
+			else res.sendStatus(404);
 		}
 		else
 			res.sendStatus(404);
@@ -146,9 +142,10 @@ rest.post('/subscribe/:uuid', function(req, res) {
 
 rest.post('/unsubscribe/:uuid', function(req, res) {
 	if (req.params.uuid != null) {
-		if (req.body.name in userBLE[req.params.uuid].user.triggerlist) {
-			userBLE[req.params.uuid].user.unsubscribe(req.body.name);
-			res.sendStatus(200);
+		if (req.body.name in trigger.list){//userBLE[req.params.uuid].user.triggerlist) {
+			var ok = userBLE[req.params.uuid].unsubscribeUser(req.body.name);
+			if (ok) res.sendStatus(200);
+			else res.sendStatus(404);
 		}
 		else
 			res.sendStatus(404);
@@ -183,15 +180,12 @@ rest.get('/triggerlist/:uuid', function(req,res) {
 	for (var item in trigger.list) {
 		var sub;
 		if (req.params.uuid != null && userBLE[req.params.uuid] != null) {
-			if (item in userBLE[req.params.uuid].user.triggerlist)
-				sub = "yes";
-			else
-				sub = "no";
+			sub = (userBLE[req.params.uuid].isSubscribed(item))? "yes" : "no";
 		}
 		else
 			sub = "undefined";
 		result.push({ name: item, subscribed: sub });
-  }
+	}
 	res.json(result);
 });
 
@@ -216,14 +210,16 @@ process.on('storeTrigger', function(trigger){
 *********************/
 var usersDB = new Datastore({ filename: 'DB/users.db', inMemoryOnly: false });
 process.on('userRegistration', function(selector, entry){
-  usersDB.upsert(selector, entry);
+	usersDB.upsert(selector, entry);
+});
+process.on('triggerSubscription', function(selector, entry){
+	usersDB.update(selector, entry, false);
 });
 
 /********************
 *  Trigger Watcher   *
 *********************/
-var trigger = new Trigger();
-var watcher = chokidar.watch('custom/', { ignored: /[\/\\]\./, /*ignored: /.*[^js]$/,*/ persistent: true });
+var watcher = chokidar.watch('custom/', { ignored: /[\/\\]\./, /*ignored: /.*[^js]$/,*/ persistent: true, depth: 1 });
 watcher.on('add', function(path) {
 	console.log(path + " has been added!");
 	var dir = path.split('/')[0];
@@ -261,6 +257,12 @@ watcher.on('change', function(path) {
 watcher.on('error', function(error) {
 	console.log(error);
 });
+
+watcher.on('ready', function(){
+	console.log("Module directory scan completed..");
+	startBLEscan();
+});
+
 /********************
 *   Multicast DNS   *
 *********************/

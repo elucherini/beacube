@@ -1,0 +1,14 @@
+{
+  "name": "custom",
+  "version": "1.0.0",
+  "description": "Custom modules Beacube",
+  "repository": {
+    "type": "git",
+    "url": "--"
+  },
+  "author": "Pasquale Antonante, Elena Lucherini",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "rpi-gpio": "^0.7.0"
+  }
+}

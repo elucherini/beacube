@@ -69,7 +69,12 @@ User.prototype.subscribe = function (t, name) {
 	if (!(name in this.triggerlist)) {
 		this.triggerlist[name] = t;
 		console.log(this.username + " subscribed to " + name);
+		if(this._state)
+			this.triggerlist[item].apply(this, this._state);
+		return true
 	}
+	else
+		return false;
 };
 
 /* unsubscribe to trigger */
@@ -77,7 +82,25 @@ User.prototype.unsubscribe = function (name) {
 	if (name in this.triggerlist) {
 		delete this.triggerlist[name];
 		console.log(this.username + " unsubscribed from " + name);
+		return true;
 	}
+	else
+		return false;
+};
+
+User.prototype.getTriggersArray = function (name) {
+	var triggersArray = [];
+	for (var t in this.triggerlist) {
+		triggersArray.push(t);
+  	}
+	return triggersArray;
+};
+
+User.prototype.isSubscribed = function (trigger) {
+	if (trigger in this.triggerlist)
+    	return true;
+    else
+    	return false;	
 };
 
 module.exports = User;

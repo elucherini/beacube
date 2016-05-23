@@ -111,4 +111,11 @@ Trigger.prototype.update = function (params, file, callback) {			//	params = { f
 	*/
 };
 
+Trigger.prototype.getCode = function (triggerName){
+	if(triggerName in this.list)
+		return this.list[triggerName];
+	else
+		return undefined;
+};
+
 module.exports = Trigger;
