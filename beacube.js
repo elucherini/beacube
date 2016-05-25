@@ -12,14 +12,35 @@ const TIME_TO_LIVE = 3; //minutes
 
 userBLE = Array();
 trigger = new Trigger();
+startTrials = 0;
 
 /********************
 *   Noble Setup     *
 *********************/
 function startBLEscan(){	//executed after module dir scan is completed
-	noble.startScanning([],true);
-	console.log("[BLE scan] started....")
-}
+	if (noble.state === 'poweredOn') {
+		console.log("[BLE scan] started....");
+		noble.startScanning([], true);
+	} else {
+		noble.stopScanning();
+		console.log("[BLE scan] stopped....");
+		startTrials = startTrials ++;
+		if(startTrials<10)
+			startBLEscan();
+		else
+			.exit
+	}
+};
+
+/*noble.on('stateChange', function(state) {
+	if (state === 'poweredOn') {
+		//noble.startScanning([],true);
+		console.log("[BLE scan] started....");
+	} else {
+		noble.stopScanning();
+		console.log("[BLE scan] stopped....");
+	}
+});*/
 
 noble.on('discover', function(peripheral) {
     if(userBLE[peripheral.uuid]!=null) {

@@ -36,11 +36,11 @@ if (window.location.search !== "") {		// shows up only when 'uuid' is defined
 					//console.log(box);
 					if (box.attr('checked')) {
 						// SUBSCRIBE
-						$.post("http://localhost/subscribe/"+uuid,{name: box.val()});
+						$.post("/subscribe/"+uuid,{name: box.val()});
 					}
 					else if (!box.attr('checked')) {
 						//UNSUBSCRIBE
-						$.post("http://localhost/unsubscribe/"+uuid,{name: box.val()});
+						$.post("/unsubscribe/"+uuid,{name: box.val()});
 					}
 				});
 			}
@@ -56,6 +56,6 @@ if (window.location.search !== "") {		// shows up only when 'uuid' is defined
 		var newName = $('#name-bar').val(),
 			newTrigger = $('.range-slider__range').val();
 		
-		$.post("http://localhost/beacons/"+uuid,{username: newName,triggerzone: newTrigger});
+		$.post("/beacons/"+uuid,{username: newName,triggerzone: newTrigger});
 	});
 }

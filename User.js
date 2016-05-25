@@ -70,7 +70,7 @@ User.prototype.subscribe = function (t, name) {
 		this.triggerlist[name] = t;
 		console.log(this.username + " subscribed to " + name);
 		if(this._state)
-			this.triggerlist[item].apply(this, this._state);
+			this.triggerlist[name].apply(this, [this._state]);
 		return true
 	}
 	else
