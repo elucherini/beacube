@@ -28,7 +28,7 @@ function startBLEscan(){	//executed after module dir scan is completed
 		if(startTrials<10)
 			startBLEscan();
 		else
-			.exit
+			process.exit();
 	}
 };
 
