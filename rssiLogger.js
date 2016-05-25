@@ -1,20 +1,12 @@
-var noble = require('noble');
+var Bleacon = require('bleacon');
 
+Bleacon.startScanning();
 var rssiData = Array();
-
 const DATASET = 1000;
 
-noble.on('stateChange', function(state) {
-  if (state === 'poweredOn') {
-    noble.startScanning([],true);
-  } else {
-    noble.stopScanning();
-  }
-});
-
-noble.on('discover', function(peripheral) {
-    rssiData.push(peripheral.rssi);
-    console.log(peripheral.rssi);
+Bleacon.on('discover', function(bleacon) {
+    rssiData.push(bleacon.rssi);
+    console.log(bleacon.rssi);
     if(rssiData.length>=DATASET){
     	process.exit(0);
     }

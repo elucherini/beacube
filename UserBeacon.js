@@ -1,38 +1,48 @@
-//var KalmanFilter = require('kalmanjs').default;
-var Filter = require('./Filter');
+var KalmanFilter = require('kalmanjs').default;
+//var Filter = require('./Filter');
 var User = require('./User');
-
-const REF_POWER = -61; //usually ranges between -59 to -65
+var Bleacon = require('bleacon');
 
 /* ************************ 
 *     UserBeacon Class    *
 ***************************/
-var UserBeacon = function(uuid, rssi, username, triggerzone){ //class constructor
+var UserBeacon = function(bleacon){ //class constructor
 	/* Private */
-  //this._kalmanFilter = new KalmanFilter({R: 0.00068, Q: 1999.4});
-  this._filter = new Filter(40, rssi);  //arg: window size, start value
-  /* Public */
-  this.uuid = uuid;
-  this.rssi = rssi;
+  this._kalmanFilter = new KalmanFilter({R: 29.5, Q: 400000, A: 1, B: 1, C: 1});
+  /* Beacon */
+  this.uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
+  //this.major = bleacon.major;
+  //this.minor = bleacon.minor;
+  this.rssi = this._kalmanFilter.filter(bleacon.rssi);
+  this.measuredPower = bleacon.measuredPower;
+  this.accuracy = bleacon.accuracy;
+  this.proximity = bleacon.proximity;
+
+  //this._filter = new Filter(40, this.rssi);  //arg: window size, start value
+
 	//this.username = username;
-  this.user = new User(username, triggerzone);
+  this.user = new User(null, null);
   this.last = Date.now();
-  this.distance = this._computeDistance(rssi);
+  this._computeDistance(this.rssi);
 };
 
 
 /********* PUBLIC METHODS *******************/
 /* ----- getJson ---- */
 UserBeacon.prototype.getJson = function(){
-  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, last: this.last, user: this.user.username, triggerzone: this.user.triggerzone};
+  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, proximity: this.proximity, last: this.last, user: this.user.username, triggerzone: this.user.triggerzone};
 };
 
 /* ----- updateRSSI ---- */
-UserBeacon.prototype.update = function(rssi) {
-  this.rssi = rssi;
+UserBeacon.prototype.update = function(bleacon) {
+  this.rssi = this._kalmanFilter.filter(bleacon.rssi);
+  this.measuredPower = bleacon.measuredPower;
+  this.accuracy = bleacon.accuracy;
+  this.proximity = bleacon.proximity;
   this.last = Date.now();
-  //this.distance = this._kalmanFilter.filter(this._computeDistance(rssi));
-  this.distance = this._computeDistance(this._filter.push(rssi));
+  //---------
+  //this._computeDistance(this._filter.push(this.rssi));
+  this._computeDistance(this.rssi);
   this.user.checkTrigger(this.distance);
 };
 
@@ -62,20 +72,20 @@ UserBeacon.prototype.isSubscribed = function (trigger) {
 
 /********** PRIVATE METHODS ******************/
 /* ----- calculateDistance ---- */
-UserBeacon.prototype._computeDistance = function(rssi) {
+UserBeacon.prototype._computeDistance = function() {
   // OLD vers.
   var distance;
-  if (rssi == 0) {
-    distance = -1; 
+  if (this.rssi == 0) {
+    this.distance = -1; 
   }
   else{
-    var ratio = rssi*1.0/REF_POWER;
+    var ratio = this.rssi*1.0/this.measuredPower;
     if (ratio < 1.0) 
-      distance = Math.pow(ratio,10);
+      this.distance = Math.pow(ratio,10);
     else 
-      distance =  (5.3103)*Math.pow(ratio,2.0916) - 4.3325;    
+      this.distance =  (5.3103)*Math.pow(ratio,2.0916) - 4.3325;    
   }
-  return distance;
+  return this.distance;
 
   // Path Loss Model
   /*var n=2;  //decay ratio (usually 2 in indoor)

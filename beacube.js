@@ -1,57 +1,41 @@
-var noble = require('noble');
+var Bleacon = require('bleacon');
 var express = require('express');
 var bodyParser = require('body-parser');
 var chokidar = require('chokidar');
+var os = require('os');
+var sys = require('sys')
+var exec = require('child_process').exec;
+var mDNS = require('mdns');
+
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
-var mDNS = require('mdns');
 var Trigger = require ("./Trigger");
-var os = require('os');
 
-const TIME_TO_LIVE = 3; //minutes
+const TIME_TO_LIVE = 2; //minutes
 
 userBLE = Array();
 trigger = new Trigger();
-startTrials = 0;
 
 /********************
 *   Noble Setup     *
 *********************/
 function startBLEscan(){	//executed after module dir scan is completed
-	if (noble.state === 'poweredOn') {
-		console.log("[BLE scan] started....");
-		noble.startScanning([], true);
-	} else {
-		noble.stopScanning();
-		console.log("[BLE scan] stopped....");
-		startTrials = startTrials ++;
-		if(startTrials<10)
-			startBLEscan();
-		else
-			process.exit();
-	}
+	Bleacon.startScanning();
+	console.log("[BLE scan] started....");
 };
 
-/*noble.on('stateChange', function(state) {
-	if (state === 'poweredOn') {
-		//noble.startScanning([],true);
-		console.log("[BLE scan] started....");
-	} else {
-		noble.stopScanning();
-		console.log("[BLE scan] stopped....");
-	}
-});*/
+/**/
 
-noble.on('discover', function(peripheral) {
-    if(userBLE[peripheral.uuid]!=null) {
-    	userBLE[peripheral.uuid].update(peripheral.rssi);
-    	//console.log('Update RSSI by ' + peripheral.uuid + ": " + peripheral.rssi);
+Bleacon.on('discover', function(bleacon) {
+	var uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
+    if(userBLE[uuid]!=null) {
+    	userBLE[uuid].update(bleacon);
     }
     else{ //new beacon
-    	console.log('DISCOVERED UUID: ' + peripheral.uuid);
-		userBLE[peripheral.uuid] = new UserBeacon(peripheral.uuid, peripheral.rssi, null, null);
+    	console.log('DISCOVERED UUID: ' + uuid);
+		userBLE[uuid] = new UserBeacon(bleacon);
 		// retrive record from DB
-		usersDB.findOne({uuid: peripheral.uuid}, function(res){
+		usersDB.findOne({uuid: uuid}, function(res){
 	        if(res!=null){
 	          console.log("Hello " + res.username);
 	          userBLE[res.uuid].user.setUsername(res.username);
@@ -208,6 +192,15 @@ rest.get('/triggerlist/:uuid', function(req,res) {
 		result.push({ name: item, subscribed: sub });
 	}
 	res.json(result);
+});
+
+rest.get('/log', function(req,res) {
+	exec("pm2 logs beacube --line 50", function (error, stdout, stderr) {
+		if (error !== null)
+			res.sendStatus(404);
+		else
+			res.send(stdout);
+	});
 });
 
 rest.use('/admin', express.static(__dirname + '/admin'));
