@@ -6,10 +6,10 @@ var Datastore = function(params){ ///params example { filename: 'data.db', autol
 
 	this.db.loadDatabase(function (err) {
 		if(err==null){
-			console.log("Database " + params.filename + " opened!")
+			console.log("[DB] Database " + params.filename + " opened!")
 		}
 		else{
-			console.log("Error on database " + params.filename + ":" + err);
+			console.log("[DB] Error on database " + params.filename + ":" + err);
 		}
 	});
 };
@@ -19,7 +19,7 @@ Datastore.prototype.insert = function(entry) {
 	if(entry!=null){
 		this.db.insert(entry, function (err) {
 			if(err!=null){
-				console.log("Error inserting in " + this.params.filename + ": " + err);
+				console.log("[DB] Error inserting in " + this.params.filename + ": " + err);
 			}
 		});
 	}
@@ -30,7 +30,7 @@ Datastore.prototype.upsert = function(selector,entry) {
 	if(selector!=null && entry!=null){
 		this.db.update(selector, entry, {upsert: true}, function (err, numAffected, affectedDocuments, upsert) {
 			if(err!=null){
-				console.log("Error upserting in " + this.params.filename + ": " + err);
+				console.log("[DB] Error upserting in " + this.params.filename + ": " + err);
 			}
 		});
 	}
@@ -42,7 +42,7 @@ Datastore.prototype.update = function(selector, entry, multiAllowed) {
 			multiAllowed = true;
 		this.db.update(selector, { $set: entry }, { multi: multiAllowed}, function (err, numReplaced) {
 			if(err!=null){
-				console.log("Error updating in " + this.params.filename + ": " + err);
+				console.log("[DB] Error updating in " + this.params.filename + ": " + err);
 			}
 		});
 	}

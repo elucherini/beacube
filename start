@@ -1,4 +1,4 @@
 #!/bin/bash
 
 pm2 start beacube.js -o out.log -e err.log --merge-logs
-
+pm2 web

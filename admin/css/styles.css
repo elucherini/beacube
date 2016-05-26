@@ -536,6 +536,10 @@ a.bg-danger:hover {
 	display: none;
 }
 
+.sidebar .nav {
+	margin-top: 15px;
+}
+
 .sidebar form {
 	padding: 20px 15px 5px 15px;
 	border-bottom: 1px solid #eee;
@@ -937,6 +941,11 @@ table {
 	border-color: #ddd;
 	height: 65px;
 	overflow: scroll;
+}
+
+.log-text{
+    resize: none;
+    width: 100%;
 }
 
 

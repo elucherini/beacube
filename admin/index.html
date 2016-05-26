@@ -34,15 +34,12 @@
 	
 	
 	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
-		<form role="search">
-			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Search">
-			</div>
-		</form>
 		<ul class="nav menu">
 			<li><a href="index.html"><svg class="glyph stroked home"><use xlink:href="#stroked-home"/></svg> Home</a></li>
 			<!--<li><a href="settings.html"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Settings</a></li>-->
 			<li><a href="load.html"><svg class="glyph stroked app-window"><use xlink:href="#stroked-app-window"></use></svg> Load New Code</a></li>
+
+			<li><a href="log.html"><svg class="glyph stroked notepad"><use xlink:href="#stroked-notepad"></use></svg> Log</a></li>
 			<!--<li><a href="charts.html"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> Charts</a></li>
 			<li><a href="tables.html"><svg class="glyph stroked table"><use xlink:href="#stroked-table"></use></svg> Tables</a></li>
 			<li class="active"><a href="forms.html"><svg class="glyph stroked pencil"><use xlink:href="#stroked-pencil"></use></svg> Forms</a></li>
@@ -121,6 +118,7 @@
 	<!--<script src="js/jquery-1.11.1.min.js"></script>-->
 	<script src="js/jquery-1.9.0.js"></script>
 	<script src="js/jquery-migrate-1.0.0.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.rest.js"></script>
 	<script src="js/client.js"></script>
 	<script>
@@ -133,10 +131,10 @@
 
 		$(window).on('resize', function () {
 		  if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
-		})
+		});
 		$(window).on('resize', function () {
 		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
-		})
+		});
 		
 		/*$(document).ready(function() {
 			$('#beacon-list').append(data.responseText);

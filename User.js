@@ -12,7 +12,7 @@ var User = function(username, triggerzone){ // class constructor
 	this._state = 'out';
 	
 	this.on('in', function() {
-		console.log(this.username + " is IN!");
+		console.log("[USER]" + this.username + " is IN!");
 		if (this.triggerlist != undefined) {
 			for (var item in this.triggerlist)
 				this.triggerlist[item].apply(this, ['in']);
@@ -21,7 +21,7 @@ var User = function(username, triggerzone){ // class constructor
   	});
 	
 	this.on('out', function(){
-		console.log(this.username + " is OUT!");
+		console.log("[USER]" + this.username + " is OUT!");
 		if (this.triggerlist != undefined) {
 			for (var item in this.triggerlist)
 				this.triggerlist[item].apply(this, ['out']);
@@ -68,7 +68,7 @@ User.prototype.setTriggerzone = function(tz) {
 User.prototype.subscribe = function (t, name) {
 	if (!(name in this.triggerlist)) {
 		this.triggerlist[name] = t;
-		console.log(this.username + " subscribed to " + name);
+		console.log("[USER]" + this.username + " subscribed to " + name);
 		this.triggerlist[name].apply(this, ['subscribe']);
 		if(this._state)
 			this.triggerlist[name].apply(this, [this._state]);
@@ -83,7 +83,7 @@ User.prototype.unsubscribe = function (name) {
 	if (name in this.triggerlist) {
 		this.triggerlist[name].apply(this, ['unsubscribe']);
 		delete this.triggerlist[name];
-		console.log(this.username + " unsubscribed from " + name);
+		console.log("[USER]" + this.username + " unsubscribed from " + name);
 		return true;
 	}
 	else

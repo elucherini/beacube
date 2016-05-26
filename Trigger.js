@@ -57,17 +57,17 @@ Trigger.prototype.load = function (params, file, callback) {			//	params = {	fol
 																		//	subscribe: true	}
 															
 	if (file.split(".")[1] !== "js") {
-		console.log(file + " is not a .js file or belongs to a subfolder, won't be loaded\n");
+		console.log("[TRIGGER]" + file + " is not a .js file or belongs to a subfolder, won't be loaded");
 		return;
 	}
 	var filename = file.split(".")[0];
 	
 	if (!(filename in this.list)) {
 		this.list[filename] = require('./' + params.folder + filename);
-		console.log(filename + " loaded\n");
+		console.log("[TRIGGER]" + filename + " loaded");
 	}
 	else
-		console.log(filename + " already exists, call update method instead\n");
+		console.log("[TRIGGER]" + filename + " already exists, call update method instead");
 	
 	if (params.subscribe)
 		callback(this.list[filename], filename);
@@ -80,13 +80,13 @@ Trigger.prototype.delete = function (params, file, callback) {			//	params = {	f
 	var filename = file.split(".")[0];
 	
 	if (filename in this.list) {
-		console.log("Deleting cache entry for " + filename);
+		console.log("[TRIGGER] " + "Deleting cache entry for " + filename);
 		delete require.cache[require.resolve('./' + params.folder + filename)];
 		delete this.list[filename];
-		console.log(filename + " deleted\n");
+		console.log("[TRIGGER] " + filename + " deleted\n");
 	}
 	else
-		console.log(filename + " is not in the list, won't be deleted\n");
+		console.log("[TRIGGER] " + filename + " is not in the list, won't be deleted");
 	
 	if (params.unsubscribe)
 		callback(filename);
@@ -98,13 +98,13 @@ Trigger.prototype.update = function (params, file, callback) {			//	params = { f
 	var filename = file.split(".")[0];
 	
 	if (filename in this.list) {
-		console.log(filename + " changed. Deleting old cache entry...");
+		console.log("[TRIGGER] " + filename + " changed. Deleting old cache entry...");
 		delete require.cache[require.resolve('./' + params.folder + filename)];
 		this.list[filename] = require('./' + params.folder + filename);
-		console.log(filename + " updated\n");
+		console.log("[TRIGGER] " + filename + " updated");
 	}
 	else
-		console.log(filename + " is not in the list, won't be changed\n");
+		console.log("[TRIGGER] " + filename + " is not in the list, won't be changed");
 	/*
 	if (params.subscribe)
 		callback(this.list[filename], filename);

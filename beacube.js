@@ -21,7 +21,7 @@ trigger = new Trigger();
 *********************/
 function startBLEscan(){	//executed after module dir scan is completed
 	Bleacon.startScanning();
-	console.log("[BLE scan] started....");
+	console.log("[BLE] Scan started....");
 };
 
 /**/
@@ -32,12 +32,12 @@ Bleacon.on('discover', function(bleacon) {
     	userBLE[uuid].update(bleacon);
     }
     else{ //new beacon
-    	console.log('DISCOVERED UUID: ' + uuid);
+    	console.log('[BLE] Discovered uuid: ' + uuid);
 		userBLE[uuid] = new UserBeacon(bleacon);
 		// retrive record from DB
 		usersDB.findOne({uuid: uuid}, function(res){
 	        if(res!=null){
-	          console.log("Hello " + res.username);
+	          console.log("[BLE] Hello " + res.username);
 	          userBLE[res.uuid].user.setUsername(res.username);
 	          for(var t in res.triggerlist){
 	          	var triggerName = res.triggerlist[t];
@@ -46,7 +46,7 @@ Bleacon.on('discover', function(bleacon) {
 	          userBLE[res.uuid].user.setTriggerzone(res.triggerzone);
 	        }
 	        else{
-	          console.log("Unknown user..");
+	          console.log("[BLE] Unknown user..");
 	        }
       });
     }  
@@ -58,7 +58,7 @@ var BeaconCleaner = setInterval(function(){
   for (var item in userBLE) {
     var ble = userBLE[item];
     if(ble!=null && (timestamp-ble.last)>TIME_TO_LIVE*60*1000){
-      console.log('DELETED UUID: ' + item);
+      console.log('[BLE] Deleted uuid: ' + item);
   	 delete userBLE[item];
     }
   }
@@ -110,21 +110,18 @@ rest.get('/nearest', function(req, res) {
 
 /* Edits username and trigger zone */
 rest.post('/beacons/:uuid', function(req, res) {
-	console.log("POST received");
 	//console.log(req.body);
 	if (userBLE[req.params.uuid] != null) {
 		if (req.body.username != null && req.body.username !== ""){
-			console.log("Username is " + req.body.username );
+			console.log("[REST] Registration for" + req.params.uuid + ": " + req.body.username );
 			userBLE[req.params.uuid].user.setUsername(req.body.username);
 		}
 		if (req.body.triggerzone != null && !isNaN(req.body.triggerzone)){
-			console.log("Triggerzone is " + req.body.triggerzone);
+			console.log("[REST] Triggerzone for " + req.params.uuid + ":" + req.body.triggerzone);
 			userBLE[req.params.uuid].user.setTriggerzone(req.body.triggerzone);
 		}
-		// save into the DB
-		if(userBLE[req.params.uuid].user!=null){
-		  process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone, triggerlist: []});
-		}
+		//save to DB
+		process.emit('userRegistration', {uuid: req.params.uuid}, {uuid: req.params.uuid, username: userBLE[req.params.uuid].user.username, triggerzone: userBLE[req.params.uuid].user.triggerzone, triggerlist: []});
 		res.sendStatus(200);
 	}
 	else
@@ -232,7 +229,8 @@ rest.use('/admin', express.static(__dirname + '/admin'));
 var server = rest.listen(80, function () {
   var host = server.address().address
   var port = server.address().port
-  console.log("REST+WEBAPP server listening at http://%s:%s", host, port)
+  console.log("[REST] server listening...");
+  console.log("[WEB] server listening...");
 });
 
 /********************
