@@ -1,7 +1,10 @@
-var gpio = require('rpi-gpio');
+//var gpio = require('rpi-gpio');
+var Gpio = require('onoff').Gpio,
+  led,
+  photoresistor;
 
-function Light(direction){
-	if(direction=='in'){
+function Light(action){
+	/*if(direction=='in'){
 		// -- PHOTORESISTOR
 		gpio.setup(7, gpio.DIR_IN, () =>  {
 			gpio.read(7, function(err, value) {
@@ -23,6 +26,26 @@ function Light(direction){
 				if(err) console.log("[LIGHT] " + err);
 			});
 		});
+	}
+*/
+
+	switch(action){
+		case 'subscribe':
+			led = new Gpio(24, 'out');
+			photoresistor = new Gpio(4, 'in');
+			break;
+		case 'in':
+			var photo = photoresistor.readSync();
+			console.log("[PhotoR]" + photo^1 );
+			led.write(photo^1);
+			break;
+		case 'out':
+			led.write(0);
+			break;
+		case 'unsubscribe':
+			if(led) led.unexport();
+			if(photoresistor) photoresistor.unexport();
+			break;
 	}
 
 };

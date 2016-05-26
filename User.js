@@ -69,6 +69,7 @@ User.prototype.subscribe = function (t, name) {
 	if (!(name in this.triggerlist)) {
 		this.triggerlist[name] = t;
 		console.log(this.username + " subscribed to " + name);
+		this.triggerlist[name].apply(this, ['subscribe']);
 		if(this._state)
 			this.triggerlist[name].apply(this, [this._state]);
 		return true
@@ -80,6 +81,7 @@ User.prototype.subscribe = function (t, name) {
 /* unsubscribe to trigger */
 User.prototype.unsubscribe = function (name) {
 	if (name in this.triggerlist) {
+		this.triggerlist[name].apply(this, ['unsubscribe']);
 		delete this.triggerlist[name];
 		console.log(this.username + " unsubscribed from " + name);
 		return true;
