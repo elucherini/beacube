@@ -195,11 +195,35 @@ rest.get('/triggerlist/:uuid', function(req,res) {
 });
 
 rest.get('/log', function(req,res) {
-	exec("pm2 logs beacube --line 50", function (error, stdout, stderr) {
+	exec("tail --lines=20 out.log", function (error, stdout, stderr) {
 		if (error !== null)
 			res.sendStatus(404);
-		else
+		else{
+			res.setHeader('content-type', 'text/plain');
 			res.send(stdout);
+		}
+	});
+});
+
+rest.get('/err', function(req,res) {
+	exec("tail --lines=20 err.log", function (error, stdout, stderr) {
+		if (error !== null)
+			res.sendStatus(404);
+		else{
+			res.setHeader('content-type', 'text/plain');
+			res.send(stdout);
+		}
+	});
+});
+
+rest.get('/shutdown', function(req,res) { //pm2 delete beacube; shutdown -h +1;
+	exec("shutdown -h +1", function (error, stdout, stderr) {
+		if (error !== null)
+			res.sendStatus(404);
+		else{
+			res.sendStatus(200);
+			exec("pm2 delete beacube", undefined);
+		}
 	});
 });
 
@@ -235,7 +259,7 @@ process.on('triggerSubscription', function(selector, entry){
 *********************/
 var watcher = chokidar.watch('custom/', { ignored: /[\/\\]\./, /*ignored: /.*[^js]$/,*/ persistent: true, depth: 1 });
 watcher.on('add', function(path) {
-	console.log(path + " has been added!");
+	console.log("[WATCHER] " + path + " has been added!");
 	var dir = path.split('/')[0];
 	var file = path.split('/')[1];
 	if(os.type() == "Windows_NT"){
@@ -245,7 +269,7 @@ watcher.on('add', function(path) {
 	trigger.load({ folder: dir + '/', subscribe: false }, file);
 });
 watcher.on('unlink', function(path) {
-	console.log(path + " has been deleted!");
+	console.log("[WATCHER] " + path + " has been deleted!");
 	var dir = path.split('/')[0];
 	var file = path.split('/')[1];
 	if(os.type() == "Windows_NT"){
@@ -258,7 +282,7 @@ watcher.on('unlink', function(path) {
 	});
 });
 watcher.on('change', function(path) {
-	console.log(path + " has been changed!");
+	console.log("[WATCHER] " + path + " has been changed!");
 	var dir = path.split('/')[0];
 	var file = path.split('/')[1];
 	if(os.type() == "Windows_NT"){
@@ -269,11 +293,11 @@ watcher.on('change', function(path) {
 });
 
 watcher.on('error', function(error) {
-	console.log(error);
+	console.log("[WATCHER] " + error);
 });
 
 watcher.on('ready', function(){
-	console.log("Module directory scan completed..");
+	console.log("[WATCHER] Module directory scan completed..");
 	startBLEscan();
 });
 

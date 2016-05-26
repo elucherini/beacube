@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "bleacon": "^0.4.0",
+    "bleno": "^0.4.0",
     "bluetooth-hci-socket": "^0.4.4",
     "body-parser": "^1.15.1",
     "chokidar": "^1.5.0",

@@ -9,6 +9,7 @@ var Bleacon = require('bleacon');
 var UserBeacon = function(bleacon){ //class constructor
 	/* Private */
   this._kalmanFilter = new KalmanFilter({R: 29.5, Q: 400000, A: 1, B: 1, C: 1});
+
   /* Beacon */
   this.uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
   //this.major = bleacon.major;
@@ -17,13 +18,12 @@ var UserBeacon = function(bleacon){ //class constructor
   this.measuredPower = bleacon.measuredPower;
   this.accuracy = bleacon.accuracy;
   this.proximity = bleacon.proximity;
-
+  this._computeDistance(this.rssi);
   //this._filter = new Filter(40, this.rssi);  //arg: window size, start value
 
-	//this.username = username;
+  // User data
   this.user = new User(null, null);
   this.last = Date.now();
-  this._computeDistance(this.rssi);
 };
 
 
