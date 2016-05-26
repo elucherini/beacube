@@ -3,6 +3,8 @@ var Gpio = require('onoff').Gpio,
   led,
   photoresistor;
 
+ var lastState = undefined;
+
 function Light(action){
 	/*if(direction=='in'){
 		// -- PHOTORESISTOR
@@ -32,15 +34,16 @@ function Light(action){
 	switch(action){
 		case 'subscribe':
 			led = new Gpio(24, 'out');
-			photoresistor = new Gpio(4, 'in');
+			photoresistor = new Gpio(4, 'in', 'both');
+			photoresistor.watch(function(err, value){
+				led.write(lastState && (value^1));
+			});
 			break;
 		case 'in':
-			var photo = photoresistor.readSync();
-			console.log("[PhotoR]" + photo^1 );
-			led.write(photo^1);
+			lastState = 1;
 			break;
 		case 'out':
-			led.write(0);
+			lastState = 0;
 			break;
 		case 'unsubscribe':
 			if(led) led.unexport();
