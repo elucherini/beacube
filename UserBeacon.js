@@ -8,7 +8,7 @@ var Bleacon = require('bleacon');
 ***************************/
 var UserBeacon = function(bleacon){ //class constructor
 	/* Private */
-  this._kalmanFilter = new KalmanFilter({R: 29.5, Q: 400000, A: 1, B: 1, C: 1});
+  this._kalmanFilter = new KalmanFilter({R: 22.532, Q: 400000, A: 1, B: 0, C: 1});
 
   /* Beacon */
   this.uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
@@ -74,7 +74,7 @@ UserBeacon.prototype.isSubscribed = function (trigger) {
 /* ----- calculateDistance ---- */
 UserBeacon.prototype._computeDistance = function() {
   // OLD vers.
-  var distance;
+  /*var distance;
   if (this.rssi == 0) {
     this.distance = -1; 
   }
@@ -85,13 +85,14 @@ UserBeacon.prototype._computeDistance = function() {
     else 
       this.distance =  (5.3103)*Math.pow(ratio,2.0916) - 4.3325;    
   }
-  return this.distance;
+  return this.distance;*/
 
   // Path Loss Model
-  /*var n=2;  //decay ratio (usually 2 in indoor)
-  var d0 = 2; //reference distance
-  var p0 = -67; //rssi @ d0
-  return  d0*Math.pow(10,(p0-rssi)/(10*n));*/
+  var n=2.51;  //decay ratio (usually 2 in indoor)
+  var d0 = 1; //reference distance
+  var p0 = this.measuredPower; //rssi @ d0
+  this.distance = d0*Math.pow(10,(p0-this.rssi)/(10*n));
+  return  this.distance;
 };
 
 module.exports = UserBeacon;
