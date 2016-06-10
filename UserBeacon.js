@@ -1,5 +1,5 @@
-var KalmanFilter = require('kalmanjs').default;
-//var Filter = require('./Filter');
+//var KalmanFilter = require('kalmanjs').default;
+var SGFilter = require('./SGFilter');
 var User = require('./User');
 var Bleacon = require('bleacon');
 
@@ -8,13 +8,14 @@ var Bleacon = require('bleacon');
 ***************************/
 var UserBeacon = function(bleacon){ //class constructor
 	/* Private */
-  this._kalmanFilter = new KalmanFilter({R: 22.5322, Q: 50000, A: 1, B: 0, C: 1});
+  //this._kalmanFilter = new KalmanFilter({R: 22.5322, Q: 50000, A: 1, B: 0, C: 1});
+  this._SGfilter = new SGFilter (1, 61);
 
   /* Beacon */
   this.uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
   //this.major = bleacon.major;
   //this.minor = bleacon.minor;
-  this.rssi = this._kalmanFilter.filter(bleacon.rssi);
+  this.rssi = this._SGfilter.push(bleacon.rssi); //this._kalmanFilter.filter(bleacon.rssi);
   this.measuredPower = bleacon.measuredPower;
   this.accuracy = bleacon.accuracy;
   this.proximity = bleacon.proximity;
@@ -35,7 +36,7 @@ UserBeacon.prototype.getJson = function(){
 
 /* ----- updateRSSI ---- */
 UserBeacon.prototype.update = function(bleacon) {
-  this.rssi =  this._kalmanFilter.filter(bleacon.rssi);
+  this.rssi = this._SGfilter.push(bleacon.rssi); //this._kalmanFilter.filter(bleacon.rssi);
   this.measuredPower = bleacon.measuredPower;
   this.accuracy = bleacon.accuracy;
   this.proximity = bleacon.proximity;
@@ -96,7 +97,7 @@ UserBeacon.prototype._computeDistance = function() {
   return this.distance;*/
 
   // Path Loss Model
-  var n=1;  //decay ratio (usually 2 in indoor)
+  var n=3;  //decay ratio (usually 2 in indoor)
   var d0 = 1; //reference distance
   var p0 = -60; //this.measuredPower; //rssi @ d0
   this.distance = d0*Math.pow(10,(p0-this.rssi)/(10*n));

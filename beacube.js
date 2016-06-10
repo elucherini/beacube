@@ -6,13 +6,13 @@ var os = require('os');
 var sys = require('sys')
 var exec = require('child_process').exec;
 var mDNS = require('mdns');
-var pwm = require('pi-blaster.js');
+var blasterPwm = require('pi-blaster.js');
 
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
 var Trigger = require ("./Trigger");
 
-const TIME_TO_LIVE = 2; //minutes
+const TIME_TO_LIVE = 1; //minutes
 
 userBLE = Array();
 trigger = new Trigger();
@@ -264,9 +264,9 @@ rest.get('/shutdown', function(req,res) { //pm2 delete beacube; shutdown -h +1;
 rest.post('/rgb', function(req, res) {
 	if (req.body.R != null && req.body.G != null && req.body.B != null) {
 		console.log("[RGB LED] (" + req.body.R + ", " + req.body.G + ", " +req.body.B + ")") 
-		pwm.setPwm(17, req.body.R); //R
-		pwm.setPwm(27, req.body.G); //G
-		pwm.setPwm(18, req.body.B); //B
+		blasterPwm.setPwm(17, req.body.R); //R
+		blasterPwm.setPwm(27, req.body.G); //G
+		blasterPwm.setPwm(18, req.body.B); //B
 		res.sendStatus(200);
 	}
 	else

@@ -1,6 +1,6 @@
 {
   "name": "beacube",
-  "version": "0.0.1",
+  "version": "1.1.1",
   "description": "Beacube",
   "main": "beacube.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "express": "~4.13.4",
     "kalmanjs": "~1.0.0-beta",
     "mdns": "^2.3.3",
+    "ml-savitzky-golay": "^2.0.3",
     "nedb": "^1.8.0",
     "pi-blaster.js": "^0.1.1"
   }
