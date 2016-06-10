@@ -1,7 +1,7 @@
 //var gpio = require('rpi-gpio');
 var Gpio = require('onoff').Gpio,
-  led,
-  photoresistor;
+  led = undefined,
+  photoresistor = undefined;
 
  var lastState = 1;	//1 -> in
 
@@ -31,6 +31,7 @@ function Light(action){
 		case 'unsubscribe':
 			if(led) led.unexport();
 			if(photoresistor) photoresistor.unexport();
+			led = photoresistor = undefined;
 			break;
 	}
 

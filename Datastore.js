@@ -1,12 +1,13 @@
 var neDB = require('nedb')
 
-var Datastore = function(params){ ///params example { filename: 'data.db', autoload: true, inMemoryOnly: false })
+var Datastore = function(params, callback){ ///params example { filename: 'data.db', autoload: true, inMemoryOnly: false })
 	this.params = params;
 	this.db = new neDB(params);
 
 	this.db.loadDatabase(function (err) {
 		if(err==null){
 			console.log("[DB] Database " + params.filename + " opened!")
+			if(callback) callback();
 		}
 		else{
 			console.log("[DB] Error on database " + params.filename + ":" + err);

@@ -14,7 +14,7 @@ function Led(direction){
 module.exports = Led;*/
 
 var Gpio = require('onoff').Gpio,
-  led;
+  led = undefined;
 
 function Led(action){
 	switch(action){
@@ -29,6 +29,7 @@ function Led(action){
 			break;
 		case 'unsubscribe':
 			if(led) led.unexport();
+			led = undefined;
 			break;
 	}
 };

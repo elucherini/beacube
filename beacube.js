@@ -6,6 +6,7 @@ var os = require('os');
 var sys = require('sys')
 var exec = require('child_process').exec;
 var mDNS = require('mdns');
+var pwm = require('pi-blaster.js');
 
 var UserBeacon = require("./UserBeacon");
 var Datastore = require("./Datastore");
@@ -16,15 +17,19 @@ const TIME_TO_LIVE = 2; //minutes
 userBLE = Array();
 trigger = new Trigger();
 
+/* GROUP */
+inCounter = 0;
+groupUser = new UserBeacon({uuid: "GRP", major: "0", minor: "0", rssi: -54, measuredPower: -54, accuracy: 1, proximity: 'immediate'});
+groupUser.user.setUsername("Group");
+groupUser.user.setTriggerzone(100);
+
 /********************
-*   Noble Setup     *
+*   Bleacon Setup   *
 *********************/
 function startBLEscan(){	//executed after module dir scan is completed
 	Bleacon.startScanning();
 	console.log("[BLE] Scan started....");
 };
-
-/**/
 
 Bleacon.on('discover', function(bleacon) {
 	var uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
@@ -34,7 +39,7 @@ Bleacon.on('discover', function(bleacon) {
     else{ //new beacon
     	console.log('[BLE] Discovered uuid: ' + uuid);
 		userBLE[uuid] = new UserBeacon(bleacon);
-		// retrive record from DB
+		// retrieve record from DB
 		usersDB.findOne({uuid: uuid}, function(res){
 	        if(res!=null){
 	          console.log("[BLE] Hello " + res.username);
@@ -48,7 +53,7 @@ Bleacon.on('discover', function(bleacon) {
 	        else{
 	          console.log("[BLE] Unknown user..");
 	        }
-      });
+      	});
     }  
 });
 
@@ -128,6 +133,20 @@ rest.post('/beacons/:uuid', function(req, res) {
 		res.sendStatus(404);
 });
 
+rest.get('/triggerlist/:uuid', function(req,res) {
+	var result = [];
+	for (var item in trigger.list) {
+		var sub;
+		if (req.params.uuid != null && userBLE[req.params.uuid] != null) {
+			sub = (userBLE[req.params.uuid].isSubscribed(item))? "yes" : "no";
+		}
+		else
+			sub = "undefined";
+		result.push({ name: item, subscribed: sub });
+	}
+	res.json(result);
+});
+
 rest.post('/subscribe/:uuid', function(req, res) {
 	if (req.params.uuid != null && userBLE[req.params.uuid] != null) {
 		if (req.body.name in trigger.list) {
@@ -156,6 +175,35 @@ rest.post('/unsubscribe/:uuid', function(req, res) {
 		res.sendStatus(404);
 });
 
+rest.get('/group/triggerlist', function(req,res) {
+	var result = [];
+	for (var item in trigger.list) {
+		var sub = (groupUser.isSubscribed(item))? "yes" : "no";
+		result.push({ name: item, subscribed: sub });
+	}
+	res.json(result);
+});
+
+rest.post('/group/subscribe', function(req, res) {
+	if (req.body.name in trigger.list) {
+		var ok = groupUser.subscribeUser(trigger.getCode(req.body.name), req.body.name);
+		if (ok) res.sendStatus(200);
+		else res.sendStatus(404);
+	}
+	else
+		res.sendStatus(404);
+});
+
+rest.post('/group/unsubscribe', function(req, res) {
+	if (req.body.name in trigger.list){//userBLE[req.params.uuid].user.triggerlist) {
+		var ok = groupUser.unsubscribeUser(req.body.name);
+		if (ok) res.sendStatus(200);
+		else res.sendStatus(404);
+	}
+	else
+		res.sendStatus(404);
+});
+
 rest.post('/triggerlist', function(req, res) {		// TODO: FINISH
 	if (req.body.url != null) {
 		// DOWNLOAD
@@ -174,20 +222,6 @@ rest.get('/triggerlist', function(req,res) {
 	for (var item in trigger.list) {
 		result.push({ name: item });
   }
-	res.json(result);
-});
-
-rest.get('/triggerlist/:uuid', function(req,res) {
-	var result = [];
-	for (var item in trigger.list) {
-		var sub;
-		if (req.params.uuid != null && userBLE[req.params.uuid] != null) {
-			sub = (userBLE[req.params.uuid].isSubscribed(item))? "yes" : "no";
-		}
-		else
-			sub = "undefined";
-		result.push({ name: item, subscribed: sub });
-	}
 	res.json(result);
 });
 
@@ -224,6 +258,21 @@ rest.get('/shutdown', function(req,res) { //pm2 delete beacube; shutdown -h +1;
 	});
 });
 
+/********************
+*      RGB LED      *
+*********************/
+rest.post('/rgb', function(req, res) {
+	if (req.body.R != null && req.body.G != null && req.body.B != null) {
+		console.log("[RGB LED] (" + req.body.R + ", " + req.body.G + ", " +req.body.B + ")") 
+		pwm.setPwm(17, req.body.R); //R
+		pwm.setPwm(27, req.body.G); //G
+		pwm.setPwm(18, req.body.B); //B
+		res.sendStatus(200);
+	}
+	else
+		res.sendStatus(404);
+});
+
 rest.use('/admin', express.static(__dirname + '/admin'));
 
 var server = rest.listen(80, function () {
@@ -239,17 +288,52 @@ var server = rest.listen(80, function () {
 var triggersDB = new Datastore({ filename: 'DB/triggers.db', inMemoryOnly: false });
 process.on('storeTrigger', function(trigger){
   triggersDB.insert(trigger);
+  if (trigger.state == 'in'){
+  	inCounter++;
+  	if(inCounter>1){
+  		console.log("Ce ne sono almeno 2! (" + inCounter +")");
+  		for (var item in userBLE) {
+   			var ble = userBLE[item];
+   			ble.executeOut();
+  		}
+  		groupUser.user.executeTriggers('in');
+  	}
+  }
+  else{
+  	inCounter--;
+  	if(inCounter<=1){
+  		console.log("Una vita di stenti (" + inCounter + ")");
+  		for (var item in userBLE) {
+   			var ble = userBLE[item];
+   			ble.checkTriggerZone();
+  		}
+  		groupUser.user.executeTriggers('out');
+  	}
+  }
 });
 
 /********************
 *  	  Users DB      *
 *********************/
-var usersDB = new Datastore({ filename: 'DB/users.db', inMemoryOnly: false });
+var usersDB = new Datastore({ filename: 'DB/users.db', inMemoryOnly: false }, function() {
+	usersDB.findOne({uuid: groupUser.uuid}, function(res){
+        if(res!=null){
+          console.log("[GRP] Load settings ");
+          for(var t in res.triggerlist){
+          	var triggerName = res.triggerlist[t];
+          	groupUser.subscribeUser(trigger.getCode(triggerName), triggerName);
+          }
+        }
+        else{
+        	process.emit('userRegistration', {uuid: groupUser.uuid}, {uuid: groupUser.uuid, username: groupUser.user.username, triggerzone: groupUser.user.triggerzone, triggerlist: []});
+        }
+    });
+});
 process.on('userRegistration', function(selector, entry){
 	usersDB.upsert(selector, entry);
 });
 process.on('triggerSubscription', function(selector, entry){
-	usersDB.update(selector, entry, false);
+	usersDB.update(selector, entry);
 });
 
 /********************

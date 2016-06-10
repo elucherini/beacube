@@ -17,6 +17,7 @@
     "express": "~4.13.4",
     "kalmanjs": "~1.0.0-beta",
     "mdns": "^2.3.3",
-    "nedb": "^1.8.0"
+    "nedb": "^1.8.0",
+    "pi-blaster.js": "^0.1.1"
   }
 }

@@ -8,7 +8,7 @@ var Bleacon = require('bleacon');
 ***************************/
 var UserBeacon = function(bleacon){ //class constructor
 	/* Private */
-  this._kalmanFilter = new KalmanFilter({R: 22.532, Q: 400000, A: 1, B: 0, C: 1});
+  this._kalmanFilter = new KalmanFilter({R: 22.5322, Q: 50000, A: 1, B: 0, C: 1});
 
   /* Beacon */
   this.uuid = bleacon.uuid + "-" + bleacon.major + "-" + bleacon.minor;
@@ -30,12 +30,12 @@ var UserBeacon = function(bleacon){ //class constructor
 /********* PUBLIC METHODS *******************/
 /* ----- getJson ---- */
 UserBeacon.prototype.getJson = function(){
-  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, proximity: this.proximity, last: this.last, user: this.user.username, triggerzone: this.user.triggerzone};
+  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, refPower: this.measuredPower, last: this.last, user: this.user.username, triggerzone: this.user.triggerzone};
 };
 
 /* ----- updateRSSI ---- */
 UserBeacon.prototype.update = function(bleacon) {
-  this.rssi = this._kalmanFilter.filter(bleacon.rssi);
+  this.rssi =  this._kalmanFilter.filter(bleacon.rssi);
   this.measuredPower = bleacon.measuredPower;
   this.accuracy = bleacon.accuracy;
   this.proximity = bleacon.proximity;
@@ -70,6 +70,14 @@ UserBeacon.prototype.isSubscribed = function (trigger) {
   return this.user.isSubscribed(trigger);
 };
 
+UserBeacon.prototype.executeOut = function(){
+  this.user.executeTriggers('out');
+}
+
+UserBeacon.prototype.checkTriggerZone = function(){
+  this.user.forceCurrentState(this.distance);
+}
+
 /********** PRIVATE METHODS ******************/
 /* ----- calculateDistance ---- */
 UserBeacon.prototype._computeDistance = function() {
@@ -88,9 +96,9 @@ UserBeacon.prototype._computeDistance = function() {
   return this.distance;*/
 
   // Path Loss Model
-  var n=2.51;  //decay ratio (usually 2 in indoor)
+  var n=1;  //decay ratio (usually 2 in indoor)
   var d0 = 1; //reference distance
-  var p0 = this.measuredPower; //rssi @ d0
+  var p0 = -60; //this.measuredPower; //rssi @ d0
   this.distance = d0*Math.pow(10,(p0-this.rssi)/(10*n));
   return  this.distance;
 };
