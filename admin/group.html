@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Beacube - Settings</title>
+<title>Beacube - Group Settings</title>
 
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/styles.css" rel="stylesheet">
@@ -39,6 +39,7 @@
 			<li><a href="index.html"><svg class="glyph stroked home"><use xlink:href="#stroked-home"/></svg> Home</a></li>
 			<li><a href="group.html"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg> Group settings</a></li>
 			<li><a href="load.html"><svg class="glyph stroked app-window"><use xlink:href="#stroked-app-window"></use></svg> Load New Code</a></li>
+
 			<li><a href="log.html"><svg class="glyph stroked notepad"><use xlink:href="#stroked-notepad"></use></svg> Log</a></li>
 		</ul>
 
@@ -49,8 +50,7 @@
 		<div class="row">
 			<ol class="breadcrumb">
 				<li><a href="index.html"><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
-				<li><a href="#"><svg class="glyph stroked gear"><use xlink:href="#stroked-gear"/></svg></a></li>
-				<li class="active"> Settings</li>
+				<li class="active"> Group Settings</li>
 			</ol>
 		</div><!--/.row-->
 		
@@ -64,23 +64,14 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
-					<div class="panel-heading">Settings</div>
+					<div class="panel-heading">Group Settings</div>
 					<div class="panel-body">
 						<div class="col-md-12">
 							<form role="form" id="form-settings">
 								<div class="form-group" id="settings">
-									<label>Username</label>
-									<input class="form-control" placeholder="Username" id="name-bar">					<!-- placeholder = current name -->
-									<br>
-									<label>Trigger zone</label>
-									<div class="range-slider">
-										<input class="range-slider__range" type="range" value="2" min="2" max="8" step="3" data-rangeslider>	<!-- value = current value -->
-										<span class="range-slider__value">0</span>
-									</div>
 									<div class="form-group" id="triggerlist">
 										<label>Triggers</label>
 									</div>
-									<button type="submit" class="btn btn-primary" id="submit-button">Change Settings</button>
 								</div>
 							</form>
 						</div>
@@ -97,7 +88,7 @@
 	<script src="js/jquery-migrate-1.0.0.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.rest.js"></script>
-	<script src="js/settings.js"></script>
+	<script src="js/group.js"></script>
 	<script src="js/slider.js"></script>
 	<script>
 		!function ($) {
