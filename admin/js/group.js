@@ -1,6 +1,5 @@
 var client = new $.RestClient('/');
 
-if (window.location.search !== "") {
 	client.add('triggerlist', { url: 'group/triggerlist' });
 	var triggerList = client.triggerlist.read();
 	
@@ -38,4 +37,3 @@ if (window.location.search !== "") {
 		}
 		
 	});
-}
