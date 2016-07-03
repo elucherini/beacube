@@ -20,6 +20,7 @@ var UserBeacon = function(bleacon){ //class constructor
   this.accuracy = bleacon.accuracy;
   this.proximity = bleacon.proximity;
   this._computeDistance(this.rssi);
+  this.beaconPeriod = null;
   //this._filter = new Filter(40, this.rssi);  //arg: window size, start value
 
   // User data
@@ -31,7 +32,8 @@ var UserBeacon = function(bleacon){ //class constructor
 /********* PUBLIC METHODS *******************/
 /* ----- getJson ---- */
 UserBeacon.prototype.getJson = function(){
-  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, refPower: this.measuredPower, last: this.last, user: this.user.username, triggerzone: this.user.triggerzone};
+  return {uuid: this.uuid, rssi: this.rssi, distance: this.distance, refPower: this.measuredPower, last: this.last, beaconPeriod: this.beaconPeriod
+  , user: this.user.username, triggerzone: this.user.triggerzone};
 };
 
 /* ----- updateRSSI ---- */
@@ -40,6 +42,7 @@ UserBeacon.prototype.update = function(bleacon) {
   this.measuredPower = bleacon.measuredPower;
   this.accuracy = bleacon.accuracy;
   this.proximity = bleacon.proximity;
+  this.beaconPeriod =  Date.now() - this.last;
   this.last = Date.now();
   //---------
   //this._computeDistance(this._filter.push(this.rssi));
