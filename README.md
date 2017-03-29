@@ -1,4 +1,15 @@
-# README #
+# BEACUBE #
+
+BeaCube is an event-triggering system developed by Pasquale Antonante and Elena Lucherini for the Industrial Application class at [University of Pisa](https://www.unipi.it/index.php/english).
+
+BeaCube estimates the proximity of the user with [iBeacon](https://developer.apple.com/ibeacon/), Apple's Bluetooth Low Energy protocol. Entering (or leaving) the range of action of BeaCube will trigger actions, such as turning on (or off) the lights of a smart lighting system.
+
+Beacube stores each user’s preferences in a database, and it will trigger the chosen actions whenever the user enters or leaves the range of action.
+
+The system provides a mechanism which lets developers create third-party actions that can be added at runtime.
+
+### For more info, read the [project report](https://elucherini.github.io/assets/pdf/beacube.pdf) ###
+
 
 # Prerequisites #
 
